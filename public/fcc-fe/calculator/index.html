@@ -1,0 +1,117 @@
+    <head>
+        <link rel="stylesheet" 
+            href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" 
+            integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" 
+            crossorigin="anonymous">
+        <link rel="stylesheet" 
+            href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" 
+            crossorigin="anonymous">
+
+
+
+        <script src="https://code.jquery.com/jquery-3.1.1.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" 
+            integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" 
+            crossorigin="anonymous">
+        </script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.js"
+            crossorigin="anonymous">
+        </script>
+        <script src="./javascript.js"></script>
+
+        <style>
+            .jumbotron  {
+            border-radius: 30px;
+            border-color: lightgrey;
+            box-shadow: 6px 6px lightgray;
+            }
+            .numButton{
+            border-radius: 2%;
+            border-color: lightgrey;
+            box-shadow: 3px 3px darkgray;
+            }
+            .resultBox{
+            border-radius: 3%;
+            border-color: lightgrey;
+            box-shadow: 6px 6px black;
+            }
+
+
+
+        </style>
+    </head>
+    <body>
+    <h1>JAVASCRIPT </h1>    
+    <br>
+    
+    <div class="container" >
+        <div class="jumbotron">
+            <h2>CALC-U-LATER</h2>
+            <div class="row">
+                <div class="col-xs-1 col-sm-1"></div>
+                <div class="col-xs-11 col-sm-10">
+                    <div class="row">
+                        <div class="input-group input-group-lg">
+                            <input type="text" id="calcDisplay" value="" class="form-control input-normal resultBox" disabled />
+                        </div>
+                    </div>
+                        <br />
+
+                    <div class="row">
+                        <div class="btn-group btn-block btn-group-lg">
+                            <div class="col-xs-3 col-sm-3"><button type="buton" class="btn btn-danger  btn-block numButton" value="Backspace">CE</button> </div>
+                            <div class="col-xs-3 col-sm-3"><button type="buton" class="btn btn-danger  btn-block numButton" value="C">C</button> </div>
+                            <div class="col-xs-3 col-sm-3"><button type="buton" class="btn btn-primary btn-block numButton" value="/">/</button> </div>
+                            <div class="col-xs-3 col-sm-3"><button type="buton" class="btn btn-primary btn-block numButton" value="*">*</button> </div>
+                        </div>
+                    </div>
+                        <br />
+                    <div class="row">
+                        <div class="btn-group btn-block btn-group-lg">
+                        <div class="col-xs-3 col-sm-3"><button type="buton" class="btn btn-info btn-block numButton" value="7">7</button> </div>
+                        <div class="col-xs-3 col-sm-3"><button type="buton" class="btn btn-info btn-block numButton" value="8">8</button> </div>
+                        <div class="col-xs-3 col-sm-3"><button type="buton" class="btn btn-info btn-block numButton" value="9">9</button> </div>
+                        <div class="col-xs-3 col-sm-3"><button type="buton" class="btn btn-primary btn-block numButton" value="-">-</button> </div>                    
+                        </div>
+                    </div>
+                        <br />
+                    <div class="row">
+                        <div class="btn-group btn-block btn-group-lg">
+                        <div class="col-xs-3 col-sm-3"><button type="buton" class="btn btn-info btn-block numButton" value="4">4</button> </div>
+                        <div class="col-xs-3 col-sm-3"><button type="buton" class="btn btn-info btn-block numButton" value="5">5</button> </div>
+                        <div class="col-xs-3 col-sm-3"><button type="buton" class="btn btn-info btn-block numButton" value="6">6</button> </div>
+                        <div class="col-xs-3 col-sm-3"><button type="buton" class="btn btn-primary btn-block numButton" value="+">+</button> </div>                    
+                        </div>
+                    </div>
+                        <br />
+                    <div class="row">
+                        <div class="btn-group btn-block btn-group-lg">
+                        <div class="col-xs-9 col-sm-9">
+                            <div class="row">
+                                <div class="btn-group btn-block btn-group-lg">
+                                <div class="col-xs-4 col-sm-4"><button type="buton" class="btn btn-info btn-block numButton" value="1">1</button> </div>
+                                <div class="col-xs-4 col-sm-4"><button type="buton" class="btn btn-info btn-block numButton" value="2">2</button> </div>
+                                <div class="col-xs-4 col-sm-4"><button type="buton" class="btn btn-info btn-block numButton" value="3">3</button> </div>
+                                </div>
+                            </div>
+                            <br />
+                            <div class="row">
+                                <div class="btn-group btn-block btn-group-lg">
+                                <div class="col-xs-8 col-sm-8"><button type="buton" class="btn btn-info btn-block numButton" value="0">0</button> </div>
+                                <!-- div class="col-xs- col-sm -3"><button type="buton" class="btn btn-info btn-lg btn-block numButton">2</button> </div-->
+                                <div class="col-xs-4 col-sm-4"><button type="buton" class="btn btn-info btn-block numButton" value=".">.</button> </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-3 col-sm-3"><button type="buton" class="btn btn-primary btn-block numButton" style="height: 7em" value="Enter">=</button> </div>                    
+                    </div>
+                    </div>
+                    <br />
+                    </div>                        
+                                        
+                </div>
+            </div>
+        </div>
+
+    </div>
+    </body>

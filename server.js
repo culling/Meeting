@@ -4,6 +4,7 @@ var express     = require('./config/express');
 
 var app         = express();
 
-app.listen(3001);
+var port = 80;
+app.listen(port);
 module.exports = app;
-console.log('server running at http://localhost:3001');
+console.log('server running at http://localhost:' + port);

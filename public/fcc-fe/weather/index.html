@@ -1,0 +1,92 @@
+
+<HTML>
+<head>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+<script src="https://code.jquery.com/jquery-3.1.1.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.js" crossorigin="anonymous"></script>
+
+<script src="./javascript.js"></script>
+<style>
+    span.date-display-single{font-weight: bold;}
+
+    .displayType{
+        background-color: #505050;
+        border-radius: 50%;
+        font-size: 110%;
+        color: #3498db ;
+    }
+
+    body {background-color: black ;
+        
+    }
+
+    .weatherContainer {background-color: darkslategrey; }
+    .weatherHeader{
+        color: darkgray;
+    }
+    .weatherText{
+        font-size: 180%;
+        color: white;
+    }
+    .weatherLocation{
+        font-size: 150%;
+        color: #909090;
+        text-align:end;
+    }
+
+    .loader {
+        border: 16px solid #f3f3f3; /* Light grey */
+        border-top: 16px solid #3498db; /* Blue */
+        border-radius: 50%;
+        width: 80px;
+        height: 80px;
+        animation: spin 2s linear infinite;
+        align-content:center;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+</style>
+
+</head>
+<script src="https://code.jquery.com/jquery-3.1.1.js"></script>
+
+  <br>
+    <div class="container" >
+        <div class="jumbotron weatherContainer" >
+            <div class="row">
+                <div class="col-md-1"></div>
+                <div class="col-md-10">
+                    <h1 class="weatherHeader"> Weather </h1>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <span class="weatherText">
+                                loading text
+                            </span>
+                        
+                            <div class="row">
+                                <div class="col-md-6"></div>
+                                <div class="col-md-6 weatherLocation">
+ 
+                                </div>
+                            </div>
+                            <div class="row">
+                                <!-- div>
+                                    <button class="btn btn-default" style="position: absolute; right: 0;" onclick="getWeather();">
+                                        Update Weather
+                                    </button>
+                                </div-->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-1"></div>
+            </div>
+        </div>
+    </div>
+
