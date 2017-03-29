@@ -10,6 +10,20 @@ class TestComponent extends React.Component {
     }
 }
 
+class BigBox extends React.Component{
+    render(){
+        return (
+            <div className = "big-box container">
+                <h3> Big Box </h3>
+            </div>
+        )
+    }
+}
+
+ReactDOM.render (
+    <TestComponent />, document.getElementById('mount-point')
+)
+
 ReactDOM.render (
     <TestComponent />, document.getElementById('mount-point')
 )
