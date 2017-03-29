@@ -11,13 +11,38 @@ class TestComponent extends React.Component {
 }
 
 class BigBox extends React.Component{
-    render(){
+    constructor(props) {
+        super(props);
+        this.state = {
+            test: 'my Test',
+            childVisible: true
+        }
+    };
+
+    render() {
         return (
-            <div className = "big-box container">
+            <div className = "big-box flex container">
                 <h3> Big Box </h3>
+                <div className="row"> 
+                    <div className="col-md-6 first" onClick={this._onClick.bind(this)} >
+                        First
+                        {this.state.test}
+                    </div>
+                    <div className="second">
+                        Second
+                    </div>
+                </div>
+
             </div>
         )
     }
+
+  _onClick(){
+      console.log('clicked');
+      console.log( this.state.childVisible );
+        this.setState({childVisible: !this.state.childVisible});
+  }
+
 }
 
 ReactDOM.render (

@@ -12,3 +12,13 @@
   
 }
 
+.first{
+ background-color: rgb(200, 200, 200);
+ min-height: 80%;
+ }
+
+ .second{
+ background-color: rgb(100, 100, 100);
+ min-height: 80%;
+    flex-grow: 1;
+ }
