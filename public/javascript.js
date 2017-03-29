@@ -25,5 +25,5 @@ ReactDOM.render (
 )
 
 ReactDOM.render (
-    <TestComponent />, document.getElementById('mount-point')
+    <BigBox />, document.getElementById('big-box')
 )
