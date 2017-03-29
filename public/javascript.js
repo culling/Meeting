@@ -15,21 +15,25 @@ class BigBox extends React.Component{
         super(props);
         this.state = {
             test: 'my Test',
-            childVisible: true
+            editPaneDisplay: "visible"
         }
     };
 
+    
+
     render() {
+        
         return (
             <div className = "big-box flex container">
                 <h3> Big Box </h3>
                 <div className="row"> 
-                    <div className="col-md-6 first" onClick={this._onClick.bind(this)} >
+                    <div className={"col-md-6 first ".concat( this.state.editPaneDisplay )} >
                         First
                         {this.state.test}
                     </div>
                     <div className="second">
                         Second
+                        <button className="btn btn-default" onClick={this._onClick.bind(this)} >Edit</button>
                     </div>
                 </div>
 
@@ -39,8 +43,10 @@ class BigBox extends React.Component{
 
   _onClick(){
       console.log('clicked');
-      console.log( this.state.childVisible );
-        this.setState({childVisible: !this.state.childVisible});
+      console.log( this.state.editPaneDisplay );
+        
+        this.setState({editPaneDisplay: ((this.state.editPaneDisplay === "visible") ?  "collapse" : "visible"  ) });
+        
   }
 
 }
