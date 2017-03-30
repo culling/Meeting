@@ -25,15 +25,19 @@ class BigBox extends React.Component{
         
         return (
             <div className = "big-box flex container">
-                <h3> Big Box </h3>
+                <div className="box-heading-1"> Big Box </div>
                 <div className="row"> 
                     <div className={"col-md-6 first ".concat( this.state.editPaneDisplay )} >
-                        First
-                        {this.state.test}
+                        <div className="box-heading-1">Edit</div>
+                        <br />
+                        <textarea className="editPanelTextArea"></textarea>
                     </div>
                     <div className="second">
-                        Second
-                        <button className="btn btn-default" onClick={this._onClick.bind(this)} >Edit</button>
+                        <div className="row">
+                            <div className="col-md-12">
+                                <div className="box-heading-1">Recipie Name <button className="btn btn-default edit-button" onClick={this._onClick.bind(this)} >Edit</button></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -46,7 +50,6 @@ class BigBox extends React.Component{
       console.log( this.state.editPaneDisplay );
         
         this.setState({editPaneDisplay: ((this.state.editPaneDisplay === "visible") ?  "collapse" : "visible"  ) });
-        
   }
 
 }
