@@ -1,0 +1,38 @@
+
+$border: 20px;
+
+body{
+  background-image: url("https://upload.wikimedia.org/wikipedia/commons/d/db/Modern_Kitchen.jpg");
+  background-size:  cover;
+}
+
+.body-container{
+  padding-left: $border;
+  padding-right: $border;
+  background-color: hsla(220, 50%, 100%, 0.8);
+  height: 100%
+}
+
+.recipe{
+  border-radius: $border;
+  border-color: black;
+  border-width: 1px;
+  border-style: solid;
+  padding-left: $border;
+  padding-right: $border;
+}
+
+ .recipe-header{
+   font-size: 2em;
+   font-weight: 800;
+   color: hsl(220, 50%, 50%);
+ }
+
+ .details-div-visible, .edit-div-visible{
+   visibility: visible   
+ }
+
+.details-div-visible, .edit-div-hidden{
+   visibility: hidden;
+   display: none;
+ }
