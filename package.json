@@ -5,7 +5,10 @@
   "main": "server.js",
   "scripts": {
     "build-css": "node-sass --include-path scss public/scss/main.scss public/main.css",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    
+    "watch-sass": "nodemon -e scss -w public/scss -x npm run build-css",
+    "watch": "npm run watch-sass"
   },
   "keywords": [],
   "author": "",
