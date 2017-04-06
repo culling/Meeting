@@ -76,7 +76,7 @@ class TestComponent extends React.Component {
     }
 
     _blockOfCells(){
-
+        let localCellsArray = this.state.cellsArray.map(element => element );
         let blockArray = [[0, 0],
         [0, 1],        
         [0, 2],
@@ -86,8 +86,19 @@ class TestComponent extends React.Component {
         [2, 0],
         [2, 1],
         [2, 2]];
-        blockArray.map(element => this._initalCell(element[0], element[1]) );
 
+
+        blockArray.map(e =>{
+        let cell = Object.assign({},this.state.blankCell);
+        cell.column = ( e[0] );
+        cell.row    = ( e[1] );
+        cell.filled = true;
+        localCellsArray.push(cell);
+        });
+        this.setState({cellsArray: localCellsArray});
+
+        console.log(this.state.cellsArray);
+        //console.log( this._checkNeighborsOfCell(cell.column, cell.row) );
     }
 
 
@@ -133,7 +144,7 @@ class TestComponent extends React.Component {
         cell.filled = true;
         localCellsArray.push(cell);
         this.setState({cellsArray: localCellsArray})
-        this._checkNeighborsOfCell(cell.column, cell.row) ;
+        console.log(this._checkNeighborsOfCell(cell.column, cell.row)) ;
     }
 
 
