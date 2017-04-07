@@ -49,6 +49,27 @@ class TestComponent extends React.Component {
         );
     }
 
+    _gameRules(neighbors){
+        if(neighbors < 2){
+            console.log("cell dies - underpopulation");
+        }else if(neighbors <= 3){
+            console.log("cell lives");
+            if(neighbors === 3 ){
+                console.log("a new cell is born");
+            }
+        }else if(neighbors > 4 ){
+            console.log("cell dies - overpolulation")
+        }
+        
+
+
+    }
+
+
+    _showState(){
+        console.log(this.state)
+    }
+
     _initalCell(column, row){
         let cell = Object.assign({},this.state.blankCell);
         let localCellsArray = this.state.cellsArray.map(element => element );
@@ -59,22 +80,7 @@ class TestComponent extends React.Component {
         this.setState({cellsArray: localCellsArray});
         console.log( this._checkNeighborsOfCell(cell.column, cell.row) );
     }
-    
-    _initalCell2(column, row){
-        let cell = Object.assign({},this.state.blankCell);
-        let localCellsArray = this.state.cellsArray.map(element => element );
-        cell.column = ( column );
-        cell.row    = ( row );
-        cell.filled = true;
-        localCellsArray.push(cell);
-        this.setState({cellsArray: localCellsArray});
-        console.log( this._checkNeighborsOfCell(cell.column, cell.row) );
-    }
-
-    _showState(){
-        console.log(this.state)
-    }
-
+   
     _blockOfCells(){
         let localCellsArray = this.state.cellsArray.map(element => element );
         let blockArray = [[0, 0],
