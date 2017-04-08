@@ -1,4 +1,4 @@
-class TestComponent extends React.Component {
+class GameOfLifeComponent extends React.Component {
     constructor(){
         super();
         this.state = ({
@@ -26,18 +26,19 @@ class TestComponent extends React.Component {
         return (
     <div id="body-container">
         <h1> React is Go! </h1>
-        <button onClick={() => this._runStep(1,3) }> Run Step </button>
-        <button onClick={(this._makeRandomCell).bind(this) } > Make Random Cell </button>
+
+        <button onClick={() => this._makeRandomCells(50) } > Make Random Cell </button>
         <button onClick={() => this._blockOfCells() } > Make Cell Block </button>
         <button onClick={() => this._runStepAllCells(this.state.columns, this.state.rows) }>
             Run Step All Cells
         </button>
-        <button onClick={() => this._clearAllCells(this.state.columns, this.state.rows) }>
-            Clear All Cells
-        </button> 
-        <button onClick={() => (this._initalCell(1, 1) )   }> Make Inital Cell </button>
+        <button onClick={() => this._newGlider(0,0) }>New Glider</button>
+
+        <button onClick={() => this._clearAllCells( this.state.columns, this.state.rows)    }> Clear All Cells </button>
+
+        <button onClick={() => (this._singleCell(5,5))}> Make Inital Cell </button>
         <button onClick={() => (this._showState() )   }> Show State </button>
-        <button onClick={() => (this._clearOldCells() )}>Clear Old Cells</button>
+
         <br />
         <svg    width={this.state.cellWidth * this.state.columns}
                 height={this.state.cellHeight * this.state.rows}  
@@ -57,6 +58,21 @@ class TestComponent extends React.Component {
     };
 
 
+    _newGlider(column, row){
+        let localCellsArray = this.state.cellsArray.map(element => element );
+        let blockArray =    [                         [(column +1), (row + 0)],                         
+                                                                               [(column +2), (row + 1)],
+                             [(column +0), (row + 2)],[(column +1), (row + 2)],[(column +2), (row + 2)]];
+        blockArray.map(e =>{
+            let cell = Object.assign({},this.state.blankCell);
+            cell.column = ( e[0] );
+            cell.row    = ( e[1] );
+            cell.state  = "filled";
+            cell.generation = this.state.generation;
+            localCellsArray.push(cell);
+        });
+        this.setState({cellsArray: localCellsArray});
+    }
 
 
 
@@ -66,47 +82,43 @@ class TestComponent extends React.Component {
 
 
     _runStep(column, row){
-        let localCellsArray = this.state.cellsArray.map(element => element );
         let neighbors       = this._checkNeighborsOfCell(column, row);
         let cell            = Object.assign({},this.state.blankCell);
-        cell.column         = ( column );
-        cell.row            = ( row );
-        cell.generation     = this.state.generation ;
+            cell.column         = ( column );
+            cell.row            = ( row );
+            cell.generation     = this.state.generation +1 ;
+            cell.neighbors      = this._checkNeighborsOfCell(column, row);
+
         if(neighbors < 2){
-            console.log("cell dies - underpopulation");
-            cell.state  = "empty";
-            localCellsArray.push(cell);
-        }else if(neighbors <= 3){
-            console.log("cell unchanged");
-            if(neighbors === 3 ){
+            if(cell.state === "filled"){
+                console.log("cell dies - underpopulation");
+                cell.state  = "empty";
+            }
+        }else if(neighbors === 2){
+            if ((this._checkCell(column, row)) === 1){
+                //console.log(this._checkCell(column, row));
+                cell.state = "filled";
+                console.log(cell);
+            }
+
+        }else if(neighbors === 3){
                 console.log("a new cell is born");
                 cell.state  = "filled";
-                localCellsArray.push(cell);
-            }else{
-                localCellsArray.push(cell);                
-            }
+                //console.log(cell);                
         }else if(neighbors >= 4 ){
             console.log("cell dies - overpolulation")
             cell.state  = "empty";
-            localCellsArray.push(cell);
         }
-        console.log(cell);
-
-        //console.log(localCellsArray);
-        //this.setState({cellsArray: localCellsArray});
         return cell;
     };
 
+
     _clearOldCells( filterArray ){
-        //let resultArray = [];
         let resultArray = filterArray.filter(cell => {
             if (cell.generation >= ( this.state.generation ) ){
                 return (cell);
             }
         });
-
-        console.log(resultArray);
-        //this.setState({cellsArray: resultArray});
         return resultArray;
     }
 
@@ -130,15 +142,13 @@ class TestComponent extends React.Component {
         });
         localCellsArray = this._clearOldCells(localCellsArray);
         
-        //this._clearAllCells();
         this.setState({cellsArray: localCellsArray});
-        //console.log(this.state.cellsArray);
     };
    
 
     _clearAllCells(columns, rows){
         let blockArray = [];
-        let localCellsArray = this.state.cellsArray.map(element => element );
+        let localCellsArray = [];
         for (let i = 0; i < columns; i++){
             for(let j = 0; j < rows; j++){
                  blockArray.push([i,j]);
@@ -155,7 +165,7 @@ class TestComponent extends React.Component {
         this.setState({cellsArray: localCellsArray});
         console.log(this.state.cellsArray);
     };
-   
+
 
     _checkNeighborsOfCell(column,row){
         let neighbors = 0;
@@ -175,7 +185,9 @@ class TestComponent extends React.Component {
 
     _checkCell(column, row){
         let val = this.state.cellsArray.reduce((acc, element) => {
-            if( (element.column === column) && (element.row === row) && (element.state === "filled" ) ){
+            if( (element.column === column) && (element.row === row) && (element.state === "filled" )
+                && (element.generation >= this.state.generation  ) ){
+                console.log(element);
                 return acc = 1;
             }else{
                 return acc + 0;
@@ -185,20 +197,22 @@ class TestComponent extends React.Component {
     }
 
 
-    _makeRandomCell(){
-        let cell = Object.assign({},this.state.blankCell);        
+    _makeRandomCells(count){
         let localCellsArray = this.state.cellsArray.map(element => element );                
-        cell.column = ( Math.floor((this.state.columns )*(Math.random())) );
-        cell.row    = ( Math.floor((this.state.rows    )*(Math.random())) );
-        cell.state  = "filled";
-        cell.generation = this.state.generation;
-        localCellsArray.push(cell);
+        let blankArray = [];
+        for(let i = 0; i < count; i++){
+            let cell = Object.assign({},this.state.blankCell);        
+            cell.column = ( Math.floor((this.state.columns )*(Math.random())) );
+            cell.row    = ( Math.floor((this.state.rows    )*(Math.random())) );
+            cell.state  = "filled";
+            cell.generation = this.state.generation;
+            localCellsArray.push(cell);
+        }
         this.setState({cellsArray: localCellsArray})
-        console.log(this._checkNeighborsOfCell(cell.column, cell.row)) ;
     }
 
 
-    _initalCell(column, row){
+    _singleCell(column, row){
         let cell = Object.assign({},this.state.blankCell);
         let localCellsArray = this.state.cellsArray.map(element => element );
             cell.column = ( column );
@@ -216,7 +230,6 @@ class TestComponent extends React.Component {
         let blockArray =    [[0, 0],[0, 1],[0, 2],
                              [1, 0],       [1, 2],
                              [2, 0],[2, 1],[2, 2]];
-
         blockArray.map(e =>{
             let cell = Object.assign({},this.state.blankCell);
             cell.column = ( e[0] );
@@ -262,5 +275,5 @@ class Cell extends React.Component{
 
 
 ReactDOM.render (
-    <TestComponent />, document.getElementById('mount-point')
+    <GameOfLifeComponent />, document.getElementById('mount-point')
 )
