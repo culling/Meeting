@@ -18,7 +18,12 @@ class GameOfLifeComponent extends React.Component {
                 generation: 0
             },
             possibleState:["empty", "filled"],
-            generation: 0
+            generation: 0,
+            rules:{
+                minimumNeighbors: 2,
+                maximumNeighbors: 3,
+                birthNeighbors:   3
+            }
         });
         this.focus = this.focus.bind(this);
     };
@@ -32,45 +37,44 @@ class GameOfLifeComponent extends React.Component {
     render(){
         return (
     <div id="body-container" className="container">
-        <h1> React is Go! </h1>
-        <div className="controls">
+        <h1> Conways Game of Life </h1>
+
             <div className="row">
                 <div className="col-md-12">
                         <div className="row">
-                            <div className="col-md-12">
+                            <div className="col-md-6">
 
-                                <button onClick={ this._autoTick.bind(this) } > {(this.state.autoTick)? "Stop": "Start" } </button>
-                                <button onClick={ () => this._clearAllCells( this.state.columns, this.state.rows)    }> Clear All Cells </button>
-                                <button onClick={ () => (this._showState() )   }> Show State </button>
-
+                                <button onClick={ this._autoTick.bind(this) } 
+                                    className="btn btn-info"
+                                >
+                                     {(this.state.autoTick)? "Stop": "Start" } </button>
+                                <button onClick={ () => this._clearAllCells( this.state.columns, this.state.rows)}
+                                    className="btn btn-warning"
+                                    > Clear All Cells </button>
+                                    <h3>Generation: {this.state.generation}</h3>
+                                
                             </div>
-                        </div>
-                        <div className="row">
-                            <div className="col-md-12">
-                                <input  defaultValue="100" ref={(input)=> this.randomCells = input}></input>
-                                <button onClick={ () => this._makeRandomCells( this.randomCells.value ) } > Make Random Cells </button>
-
-                                </div>
+                            <div className="col-md-6">
+                            <svg    width={this.state.cellWidth * this.state.columns}
+                                    height={this.state.cellHeight * this.state.rows}  
+                                    style={this.state.viewPortCSS}
+                                    onClick={this._clickedBoard.bind(this) }
+                                    >
+                                    {this.state.cellsArray.map((cell, i) => <Cell 
+                                            key={i}
+                                            cellHeight={this.state.cellHeight} 
+                                            cellWidth= {this.state.cellWidth} 
+                                            column=     {cell.column}
+                                            row=        {cell.row}
+                                            state=      {cell.state}
+                                    />)}
+                            </svg>
+                            </div>
                         </div>
                     </div>
             </div>
         </div>
-        <br />
-        <svg    width={this.state.cellWidth * this.state.columns}
-                height={this.state.cellHeight * this.state.rows}  
-                style={this.state.viewPortCSS}
-                onClick={this._clickedBoard.bind(this) }
-                >
-                {this.state.cellsArray.map((cell, i) => <Cell 
-                        key={i}
-                        cellHeight={this.state.cellHeight} 
-                        cellWidth= {this.state.cellWidth} 
-                        column=     {cell.column}
-                        row=        {cell.row}
-                        state=      {cell.state}
-                />)}
-        </svg>
-    </div>
+
         );
     };
 
@@ -141,12 +145,12 @@ class GameOfLifeComponent extends React.Component {
         this.setState({cellsArray: localCellsArray});
         }
         if(this.state.autoTick){
-            this.state.intervalID = 
-            requestAnimationFrame(
-                //setTimeout( 
+            //this.state.intervalID = 
+            //requestAnimationFrame(
+                setTimeout( 
                 () => this._runStepAllCells()
-                //, 2000)
-            );
+                , 200)
+            //);
         }
         }
 
@@ -172,15 +176,16 @@ class GameOfLifeComponent extends React.Component {
             }else{
                 cell.state  = "empty";
             }
-        }else if(neighbors === 2){
+        }else if((neighbors >= this.state.rules.minimumNeighbors )&&(neighbors <= this.state.rules.maximumNeighbors) ) { 
             if ((this._checkCell(column, row)) === 1){
                 cell.state = "filled";
-                console.log(cell);
+                //console.log(cell);
             }
-        }else if(neighbors === 3){
+            if(neighbors ===  this.state.rules.birthNeighbors){
                 console.log("a new cell is born");
                 cell.state  = "filled";
-        }else if(neighbors >= 4 ){
+            }
+        }else if(neighbors >    this.state.rules.maximumNeighbors ){
             if(originalState === "filled"){
                 console.log("cell dies - overpolulation");
                 cell.state  = "dead";
