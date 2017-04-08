@@ -38,11 +38,8 @@ class GameOfLifeComponent extends React.Component {
                 <div className="col-md-12">
                         <div className="row">
                             <div className="col-md-12">
-                                <button onClick={ () => this._runStepAllCells() }>
-                                    Start
-                                </button>
 
-                                <button onClick={ this._autoTick.bind(this) } > Auto Tick {(this.state.autoTick).toString()} </button>
+                                <button onClick={ this._autoTick.bind(this) } > {(this.state.autoTick)? "Stop": "Start" } </button>
                                 <button onClick={ () => this._clearAllCells( this.state.columns, this.state.rows)    }> Clear All Cells </button>
                                 <button onClick={ () => (this._showState() )   }> Show State </button>
 
@@ -100,10 +97,11 @@ class GameOfLifeComponent extends React.Component {
 
     _autoTick(){
         if (this.state.autoTick) {
+            cancelAnimationFrame(this.state.intervalID);
             this.setState({autoTick:false});
         } else {
-            this.setState({autoTick:true});
-            cancelAnimationFrame(this.state.intervalID);
+            this.state.autoTick = true;
+            this._runStepAllCells();
         }
     }
 
