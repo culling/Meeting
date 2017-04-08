@@ -19,30 +19,43 @@ class GameOfLifeComponent extends React.Component {
             possibleState:["empty", "filled"],
             generation: 0
         });
+        this.focus = this.focus.bind(this);
+
     };
+
+    focus() {
+        // Explicitly focus the text input using the raw DOM API
+        this.randomCells.focus();
+    }
 
 
     render(){
         return (
-    <div id="body-container">
+    <div id="body-container" className="container">
         <h1> React is Go! </h1>
+        <div className="controls">
+            <div className="row">
+                <div className="col-md-12">
+                    <div className="row">
+                    <input  defaultValue="100" ref={(input)=> this.randomCells = input}></input>
+                    <button onClick={() => this._makeRandomCells( this.randomCells.value ) } > Make Random Cells </button>
 
-        <button onClick={() => this._makeRandomCells(50) } > Make Random Cell </button>
-        <button onClick={() => this._blockOfCells() } > Make Cell Block </button>
-        <button onClick={() => this._runStepAllCells(this.state.columns, this.state.rows) }>
-            Run Step All Cells
-        </button>
-        <button onClick={() => this._newGlider(0,0) }>New Glider</button>
+                    <button onClick={() => this._runStepAllCells(this.state.columns, this.state.rows) }>
+                        Run Step All Cells
+                    </button>
+                    <button onClick={() => this._newGlider(0,0) }>New Glider</button>
 
-        <button onClick={() => this._clearAllCells( this.state.columns, this.state.rows)    }> Clear All Cells </button>
-
-        <button onClick={() => (this._singleCell(5,5))}> Make Inital Cell </button>
-        <button onClick={() => (this._showState() )   }> Show State </button>
-
+                    <button onClick={() => this._clearAllCells( this.state.columns, this.state.rows)    }> Clear All Cells </button>
+                    <button onClick={() => (this._showState() )   }> Show State </button>
+                    </div>
+                </div>
+            </div>
+        </div>
         <br />
         <svg    width={this.state.cellWidth * this.state.columns}
                 height={this.state.cellHeight * this.state.rows}  
                 style={this.state.viewPortCSS}
+                onClick={this._clickedBoard.bind(this) }
                 >
                 {this.state.cellsArray.map((cell, i) => <Cell 
                         key={i}
@@ -57,6 +70,22 @@ class GameOfLifeComponent extends React.Component {
         );
     };
 
+    _showState(){
+        console.log(this.state)
+    }
+
+    _clickedBoard(event){
+        /*
+        console.log("Board Clicked!");
+        console.log(event.nativeEvent);
+        console.log("x:" + event.nativeEvent.offsetX);
+        console.log("y:" + event.nativeEvent.offsetY);
+        */
+        let boardPositionX = Math.floor((event.nativeEvent.offsetX)/this.state.cellWidth)
+        let boardPositionY = Math.floor((event.nativeEvent.offsetY)/this.state.cellHeight)
+        
+        this._singleCell(boardPositionX, boardPositionY);
+    }
 
     _newGlider(column, row){
         let localCellsArray = this.state.cellsArray.map(element => element );
@@ -74,11 +103,37 @@ class GameOfLifeComponent extends React.Component {
         this.setState({cellsArray: localCellsArray});
     }
 
-
-
-    _showState(){
-        console.log(this.state)
+    _clearOldCells( filterArray ){
+        let resultArray = filterArray.filter(cell => {
+            if (cell.generation >= ( this.state.generation ) ){
+                return (cell);
+            }
+        });
+        return resultArray;
     }
+
+
+    _runStepAllCells(columns, rows){
+        let localCellsArray = this.state.cellsArray.map(element => element );
+        
+        let currentGeneration = this.state.generation +1 ;
+        this.setState({generation: currentGeneration});
+        
+        let blockArray = [];
+        for (let i = 0; i < columns; i++){
+            for(let j = 0; j < rows; j++){
+                 blockArray.push([i,j]);
+            }
+        }
+        blockArray.map(e =>{
+            let column      = ( e[0] );
+            let row         = ( e[1] );
+            localCellsArray.push(this._runStep(column, row));
+        });
+        localCellsArray = this._clearOldCells(localCellsArray);
+        
+        this.setState({cellsArray: localCellsArray});
+    };
 
 
     _runStep(column, row){
@@ -112,38 +167,6 @@ class GameOfLifeComponent extends React.Component {
         return cell;
     };
 
-
-    _clearOldCells( filterArray ){
-        let resultArray = filterArray.filter(cell => {
-            if (cell.generation >= ( this.state.generation ) ){
-                return (cell);
-            }
-        });
-        return resultArray;
-    }
-
-
-    _runStepAllCells(columns, rows){
-        let localCellsArray = this.state.cellsArray.map(element => element );
-        
-        let currentGeneration = this.state.generation +1 ;
-        this.setState({generation: currentGeneration});
-        
-        let blockArray = [];
-        for (let i = 0; i < columns; i++){
-            for(let j = 0; j < rows; j++){
-                 blockArray.push([i,j]);
-            }
-        }
-        blockArray.map(e =>{
-            let column      = ( e[0] );
-            let row         = ( e[1] );
-            localCellsArray.push(this._runStep(column, row));
-        });
-        localCellsArray = this._clearOldCells(localCellsArray);
-        
-        this.setState({cellsArray: localCellsArray});
-    };
    
 
     _clearAllCells(columns, rows){
