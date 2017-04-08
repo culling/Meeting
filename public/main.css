@@ -1,0 +1,8 @@
+rect.emptyCell {
+  fill: darkgrey; }
+
+rect.liveCell {
+  fill: red; }
+
+rect.deadCell {
+  fill: grey; }

@@ -3,9 +3,10 @@ class GameOfLifeComponent extends React.Component {
         super();
         this.state = ({
             rows: 20,
-            cellHeight: 10,
-            columns: 80,
-            cellWidth: 10,
+            cellHeight: 20,
+            columns: 20,
+            cellWidth: 20,
+            autoTick: true,
             viewPortCSS: {
                 "backgroundColor":"blue"
             },
@@ -20,7 +21,6 @@ class GameOfLifeComponent extends React.Component {
             generation: 0
         });
         this.focus = this.focus.bind(this);
-
     };
 
     focus() {
@@ -36,19 +36,26 @@ class GameOfLifeComponent extends React.Component {
         <div className="controls">
             <div className="row">
                 <div className="col-md-12">
-                    <div className="row">
-                    <input  defaultValue="100" ref={(input)=> this.randomCells = input}></input>
-                    <button onClick={() => this._makeRandomCells( this.randomCells.value ) } > Make Random Cells </button>
+                        <div className="row">
+                            <div className="col-md-12">
+                                <button onClick={ () => this._runStepAllCells() }>
+                                    Start
+                                </button>
 
-                    <button onClick={() => this._runStepAllCells(this.state.columns, this.state.rows) }>
-                        Run Step All Cells
-                    </button>
-                    <button onClick={() => this._newGlider(0,0) }>New Glider</button>
+                                <button onClick={ this._autoTick.bind(this) } > Auto Tick {(this.state.autoTick).toString()} </button>
+                                <button onClick={ () => this._clearAllCells( this.state.columns, this.state.rows)    }> Clear All Cells </button>
+                                <button onClick={ () => (this._showState() )   }> Show State </button>
 
-                    <button onClick={() => this._clearAllCells( this.state.columns, this.state.rows)    }> Clear All Cells </button>
-                    <button onClick={() => (this._showState() )   }> Show State </button>
+                            </div>
+                        </div>
+                        <div className="row">
+                            <div className="col-md-12">
+                                <input  defaultValue="100" ref={(input)=> this.randomCells = input}></input>
+                                <button onClick={ () => this._makeRandomCells( this.randomCells.value ) } > Make Random Cells </button>
+
+                                </div>
+                        </div>
                     </div>
-                </div>
             </div>
         </div>
         <br />
@@ -70,37 +77,34 @@ class GameOfLifeComponent extends React.Component {
         );
     };
 
+    componentWillMount(){
+        let randomCellCount = Math.floor((this.state.columns * this.state.rows)*0.5);
+        this._makeRandomCells(randomCellCount);
+    }
+
+    componentDidMount(){
+        this._runStepAllCells();
+    }
+
+
     _showState(){
         console.log(this.state)
     }
 
     _clickedBoard(event){
-        /*
-        console.log("Board Clicked!");
-        console.log(event.nativeEvent);
-        console.log("x:" + event.nativeEvent.offsetX);
-        console.log("y:" + event.nativeEvent.offsetY);
-        */
-        let boardPositionX = Math.floor((event.nativeEvent.offsetX)/this.state.cellWidth)
-        let boardPositionY = Math.floor((event.nativeEvent.offsetY)/this.state.cellHeight)
-        
-        this._singleCell(boardPositionX, boardPositionY);
+        cancelAnimationFrame(this.state.intervalID);
+        let column = Math.floor((event.nativeEvent.offsetX)/this.state.cellWidth)
+        let row    = Math.floor((event.nativeEvent.offsetY)/this.state.cellHeight)
+        this._singleCell(column, row);
     }
 
-    _newGlider(column, row){
-        let localCellsArray = this.state.cellsArray.map(element => element );
-        let blockArray =    [                         [(column +1), (row + 0)],                         
-                                                                               [(column +2), (row + 1)],
-                             [(column +0), (row + 2)],[(column +1), (row + 2)],[(column +2), (row + 2)]];
-        blockArray.map(e =>{
-            let cell = Object.assign({},this.state.blankCell);
-            cell.column = ( e[0] );
-            cell.row    = ( e[1] );
-            cell.state  = "filled";
-            cell.generation = this.state.generation;
-            localCellsArray.push(cell);
-        });
-        this.setState({cellsArray: localCellsArray});
+    _autoTick(){
+        if (this.state.autoTick) {
+            this.setState({autoTick:false});
+        } else {
+            this.setState({autoTick:true});
+            cancelAnimationFrame(this.state.intervalID);
+        }
     }
 
     _clearOldCells( filterArray ){
@@ -112,14 +116,15 @@ class GameOfLifeComponent extends React.Component {
         return resultArray;
     }
 
-
-    _runStepAllCells(columns, rows){
+    _runStepAllCells(){
+        console.log("tick");
+        const columns = this.state.columns
+        const rows    = this.state.rows
         let localCellsArray = this.state.cellsArray.map(element => element );
-        
         let currentGeneration = this.state.generation +1 ;
-        this.setState({generation: currentGeneration});
-        
         let blockArray = [];
+
+        {{{
         for (let i = 0; i < columns; i++){
             for(let j = 0; j < rows; j++){
                  blockArray.push([i,j]);
@@ -128,41 +133,62 @@ class GameOfLifeComponent extends React.Component {
         blockArray.map(e =>{
             let column      = ( e[0] );
             let row         = ( e[1] );
-            localCellsArray.push(this._runStep(column, row));
+            let cell = this._runStep(column, row);
+            localCellsArray.push(cell);
         });
+        }
+        this.setState({generation: currentGeneration});
+
         localCellsArray = this._clearOldCells(localCellsArray);
-        
         this.setState({cellsArray: localCellsArray});
+        }
+        if(this.state.autoTick){
+            this.state.intervalID = 
+            requestAnimationFrame(
+                //setTimeout( 
+                () => this._runStepAllCells()
+                //, 2000)
+            );
+        }
+        }
+
     };
 
 
     _runStep(column, row){
         let neighbors       = this._checkNeighborsOfCell(column, row);
+        
         let cell            = Object.assign({},this.state.blankCell);
             cell.column         = ( column );
             cell.row            = ( row );
             cell.generation     = this.state.generation +1 ;
             cell.neighbors      = this._checkNeighborsOfCell(column, row);
-
+            let originalState   = "empty";
+        if((this._checkCell(column, row)) === 1){
+            originalState = "filled"
+        }
         if(neighbors < 2){
-            if(cell.state === "filled"){
+            if(originalState === "filled"){
                 console.log("cell dies - underpopulation");
+                cell.state  = "dead";
+            }else{
                 cell.state  = "empty";
             }
         }else if(neighbors === 2){
             if ((this._checkCell(column, row)) === 1){
-                //console.log(this._checkCell(column, row));
                 cell.state = "filled";
                 console.log(cell);
             }
-
         }else if(neighbors === 3){
                 console.log("a new cell is born");
                 cell.state  = "filled";
-                //console.log(cell);                
         }else if(neighbors >= 4 ){
-            console.log("cell dies - overpolulation")
-            cell.state  = "empty";
+            if(originalState === "filled"){
+                console.log("cell dies - overpolulation");
+                cell.state  = "dead";
+            }else{
+                cell.state  = "empty";
+            }
         }
         return cell;
     };
@@ -186,7 +212,6 @@ class GameOfLifeComponent extends React.Component {
             localCellsArray.push(cell);
         });
         this.setState({cellsArray: localCellsArray});
-        console.log(this.state.cellsArray);
     };
 
 
@@ -210,7 +235,7 @@ class GameOfLifeComponent extends React.Component {
         let val = this.state.cellsArray.reduce((acc, element) => {
             if( (element.column === column) && (element.row === row) && (element.state === "filled" )
                 && (element.generation >= this.state.generation  ) ){
-                console.log(element);
+                //console.log(element);
                 return acc = 1;
             }else{
                 return acc + 0;
@@ -240,7 +265,11 @@ class GameOfLifeComponent extends React.Component {
         let localCellsArray = this.state.cellsArray.map(element => element );
             cell.column = ( column );
             cell.row    = ( row );
-            cell.state  = "filled";
+            if(this._checkCell(column, row) === 1 ){
+                cell.state = "empty";
+            }else{
+                cell.state  = "filled";
+            }
             cell.generation = this.state.generation;
             localCellsArray.push(cell);
             this.setState({cellsArray: localCellsArray});
@@ -272,11 +301,16 @@ class Cell extends React.Component{
         super();
     }
 
-    _getFillColor(){
+    _getRectStyle(){
         if(this.props.state === "empty"){
-            return "grey"
+            //return "darkgrey"
+            return "emptyCell"
         }else if (this.props.state === "filled"){
-            return "red"
+            //return "red"
+            return "liveCell"
+        }else if (this.props.state === "dead"){
+            //return "grey"
+            return "deadCell"
         }
     }
 
@@ -287,7 +321,7 @@ class Cell extends React.Component{
                     height={this.props.cellHeight} 
                     width={this.props.cellWidth} 
                     stroke="white"
-                    fill  = {this._getFillColor()}
+                    className={this._getRectStyle()}
                     />
         )
     }
