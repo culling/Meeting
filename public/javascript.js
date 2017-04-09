@@ -96,20 +96,20 @@ class GameOfLifeComponent extends React.Component {
     _generateMap(){
         let mapArray =  this.state.gameBoard.map(tile => tile);
 
-        for(let x = 0; x < this.state.columns; x++){
-            for(let y=0; y < this.state.rows; y++){
+        for(let row = 0; row < this.state.columns; row++){
+            for(let col=0; col < this.state.rows; col++){
 
                 let currentTile = Object.assign({},  this.state.tiles.floor);
                 
-                if((x==0 ) || (x== this.state.columns -1) ||
-                    (y== 0) || (y == this.state.rows -1)){
+                if((col==0 ) ||  (col == this.state.columns -1) ||
+                    (row== 0) || (row == this.state.rows    -1)){
 
                         currentTile = Object.assign({}, this.state.tiles.wall);
 
                 }
             
-                currentTile.column = x;
-                currentTile.row    = y;
+                currentTile.column = col;
+                currentTile.row    = row;
 
                 mapArray.push( currentTile );                
             }
@@ -134,54 +134,87 @@ class GameOfLifeComponent extends React.Component {
         let maxRoomHeight = 8;
         let maxRoomWidth  = 8;
 
+
+
+
         for (let roomCounter = 0; roomCounter < roomsCount; roomCounter++  ){ 
-            let randomRow     = minRow    + (Math.floor (rangeRow    * Math.random()) );
-            let randomColumn  = minColumn + (Math.floor (rangeColumn * Math.random()) );
+            let randomRow     =  (Math.floor (rangeRow    * Math.random()) );
+            let randomColumn  =  (Math.floor (rangeColumn * Math.random()) );
             let roomHeight    = minRoomHeight + (Math.floor((maxRoomHeight - minRoomHeight)*Math.random() ));
             let roomWidth     = minRoomWidth  + (Math.floor((maxRoomWidth  - minRoomWidth )*Math.random() ));
 
-            let doorPosition ={
+            let doorPosition = {
                 height: 1 +  (Math.floor((roomHeight -2 )*Math.random() )),
                 width:  1 +  (Math.floor((roomWidth  -2 )*Math.random() ))
             }
 
             console.log(randomColumn);
 
-            /*
+            let currentTile = Object.assign({}, this.state.tiles.wall); 
+            //currentTile.column  = randomRow;
+            //currentTile.row     = 5+ roomCounter;
+
+
             for (let col = 0; col < roomWidth; col++){
                 for(let row = 0; row <  roomHeight; row++){
                     let currentTile = Object.assign({}, this.state.tiles.floor); 
-                    let thisCol = col + randomColumn;
-                    let thisRow = row + randomRow;
+                    let thisCol = col ;
+                    let thisRow = row ;
                     currentTile.column  = thisCol;
                     currentTile.row     = thisRow;
 
                     if( (col== 0 ) || (col == roomWidth  -1 ) ||
                         (row== 0 ) || (row == roomHeight -1 )){
                         currentTile = Object.assign({}, this.state.tiles.wall); 
-                        currentTile.column  = thisCol;
-                        currentTile.row     = thisRow;
+                        currentTile.column  = thisCol + randomColumn;
+                        currentTile.row     = thisRow + randomRow;
                         //let currentTile = Object.assign({}, this.state.tiles.wall); 
 
-                        let originalTile = this.state.gameBoard[ (this.state.rows * currentTile.column) + currentTile.column  ] ;
+                        //let originalTile = this.state.gameBoard[ (this.state.rows * currentTile.column) + currentTile.column  ] ;
                         //console.log( originalTile );
-
-                        if( (col == doorPosition.width ) || (row == doorPosition.height ) ){
+                        
+                        if( (  (col) == doorPosition.width ) || ((row) == doorPosition.height ) ){
                             currentTile = Object.assign({}, this.state.tiles.door);
-                            currentTile.column  = col;
-                            currentTile.row     = row;                        
+                            currentTile.column  = thisCol + randomColumn;
+                            currentTile.row     = thisRow + randomRow;     
                         }
+                        
 
                     }
-                    
+                    if( ( currentTile.column < this.state.columns ) && ( currentTile.row <= this.state.rows )  ){
+                        currentGameBoard[ ( currentTile.row * this.state.columns  ) + currentTile.column ] = currentTile;
+                    }
+                /*
+                if((col==0 ) ||  (col == this.state.columns -1) ||
+                    (row== 0) || (row == this.state.rows    -1)){
+                        currentTile = Object.assign({}, this.state.tiles.wall);            
+                        currentTile.column = col;
+                        currentTile.row    = row;
+                }
+                */
+                //mapArray.push( currentTile );                
 
-                    currentGameBoard[ ( currentTile.row * this.state.columns  ) + currentTile.column ] = currentTile;
+
+
+
                 }
             }
-            */
+            
+            //currentGameBoard[ ( currentTile.row * this.state.columns  ) + currentTile.column ] = currentTile;
+            currentGameBoard.map(tile =>
+                {
+                    if(tile.column === undefined ){
+                        let currentTile = Object.assign({}, this.state.tiles.wall);            
+                        currentTile.column = col;
+                        currentTile.row    = row;
+                        tile = currentTile;
+
+                        console.log(tile);
+                    }
+                } )
         }
-        //[(row * this.state.columns) + column ]
-        //console.log(path)
+        
+
         this.setState({gameBoard: currentGameBoard});
     }
 
@@ -222,7 +255,11 @@ class Tile extends React.Component{
                     height={this.props.tileHeight} 
                     width={this.props.tileWidth} 
                     stroke="white"
-                    className={this._getRectStyle()}
+                    className={this._getRectStyle() +
+                     " column " + this.props.column +
+                     " row "    + this.props.row
+                    
+                    }
                     />
         )
     }
