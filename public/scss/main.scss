@@ -1,9 +1,9 @@
-rect.emptyCell{
+rect.floor{
     fill: grey;
 }
-rect.liveCell{
+rect.enemy{
     fill: red;
 }
-rect.deadCell{
-    fill: darkgrey;
+rect.wall{
+    fill: rgb(20, 50, 20);
 }
