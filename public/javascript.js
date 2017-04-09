@@ -12,11 +12,11 @@ class GameOfLifeComponent extends React.Component {
                 "backgroundColor":"blue"
             },
             roomSettings:{
-                minWidth:   6,
-                minHeight:  6,
-                maxHeight: 10,
-                maxWidth: 10,
-                roomsCount: 15
+                minWidth:   5,
+                minHeight:  5,
+                maxHeight: 8,
+                maxWidth: 8,
+                roomsCount: 20
             },
 
             tiles:{
@@ -38,8 +38,13 @@ class GameOfLifeComponent extends React.Component {
                     health: 1,
                     destructable: true                    
                 }
-
+            },
+            treasure:{
+                chance: 5,
+                treasureCount: 20
             }
+
+
         });
         this.focus = this.focus.bind(this);
     };
@@ -127,7 +132,6 @@ class GameOfLifeComponent extends React.Component {
         let minColumn = 1;
         let maxColumn = this.state.columns - 2;
         let rangeColumn = maxColumn - minColumn;
-        
         let minRow = 1;
         let maxRow = this.state.rows -2; 
         let rangeRow = maxRow - minRow; 
@@ -139,10 +143,12 @@ class GameOfLifeComponent extends React.Component {
 
 
 
-
+        //room creation
         for (let roomCounter = 0; roomCounter < roomsCount; roomCounter++  ){ 
+            //start of room position 
             let randomRow     =  (Math.floor (rangeRow    * Math.random()) );
             let randomColumn  =  (Math.floor (rangeColumn * Math.random()) );
+            //room height and width
             let roomHeight    = minRoomHeight + (Math.floor((maxRoomHeight - minRoomHeight)*Math.random() ));
             let roomWidth     = minRoomWidth  + (Math.floor((maxRoomWidth  - minRoomWidth )*Math.random() ));
 
@@ -151,13 +157,8 @@ class GameOfLifeComponent extends React.Component {
                 width:  2 +  (Math.floor((roomWidth  -3 )*Math.random() ))
             }
 
-            console.log(randomColumn);
 
-            let currentTile = Object.assign({}, this.state.tiles.wall); 
-            //currentTile.column  = randomRow;
-            //currentTile.row     = 5+ roomCounter;
-
-
+            //each cell of the room
             for (let col = 0; col <= roomWidth; col++){
                 for(let row = 0; row <=  roomHeight; row++){
                     let currentTile = Object.assign({}, this.state.tiles.floor); 
@@ -166,13 +167,14 @@ class GameOfLifeComponent extends React.Component {
                     currentTile.column  = thisCol;
                     currentTile.row     = thisRow;
 
-
+                    //create room
                     if( (col== 1 ) || (col == roomWidth  -1 ) ||
                         (row== 1 ) || (row == roomHeight -1 )){
                         currentTile = Object.assign({}, this.state.tiles.wall); 
                         currentTile.column  = thisCol + randomColumn;
                         currentTile.row     = thisRow + randomRow;
                         
+                        //add door on wall
                         if( (   (col) == doorPosition.width  ) ||
                                 (row) == doorPosition.height ){
                             currentTile = Object.assign({}, this.state.tiles.door);
@@ -181,14 +183,17 @@ class GameOfLifeComponent extends React.Component {
                         }
                     }
 
-                    if( (col== 0 ) || (col == roomWidth   ) ||
+                    //create border around rooms to make the whole thing walkable
+                    if(
+                        (col== 0 ) || (col == roomWidth   ) ||
                         (row== 0 ) || (row == roomHeight  )){
                         currentTile = Object.assign({}, this.state.tiles.floor); 
                         currentTile.column  = thisCol + randomColumn;
                         currentTile.row     = thisRow + randomRow;
                     }
 
-                    
+
+                    //create walled border around map to prevent trying to walk off the map
                     if( ( currentTile.column    < this.state.columns -1 ) &&
                         ( currentTile.column    > 0 ) &&
                         ( currentTile.row       < this.state.rows -1 ) &&
@@ -199,19 +204,6 @@ class GameOfLifeComponent extends React.Component {
 
                 }
             }
-            
-            //currentGameBoard[ ( currentTile.row * this.state.columns  ) + currentTile.column ] = currentTile;
-            currentGameBoard.map(tile =>
-                {
-                    if(tile.column === undefined ){
-                        let currentTile = Object.assign({}, this.state.tiles.wall);            
-                        currentTile.column = col;
-                        currentTile.row    = row;
-                        tile = currentTile;
-
-                        console.log(tile);
-                    }
-                } )
         }
         
 
