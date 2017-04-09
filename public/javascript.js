@@ -12,8 +12,11 @@ class GameOfLifeComponent extends React.Component {
                 "backgroundColor":"blue"
             },
             roomSettings:{
-                minWidth:   3,
-                minHeight:  3
+                minWidth:   6,
+                minHeight:  6,
+                maxHeight: 10,
+                maxWidth: 10,
+                roomsCount: 15
             },
 
             tiles:{
@@ -51,7 +54,7 @@ class GameOfLifeComponent extends React.Component {
     }
 
     componentDidMount(){
-        this._generateRandomRooms(10);
+        this._generateRandomRooms( this.state.roomSettings.roomsCount );
 
     }
 
@@ -129,10 +132,10 @@ class GameOfLifeComponent extends React.Component {
         let maxRow = this.state.rows -2; 
         let rangeRow = maxRow - minRow; 
 
-        let minRoomHeight = 4;
-        let minRoomWidth  = 4;
-        let maxRoomHeight = 8;
-        let maxRoomWidth  = 8;
+        let minRoomHeight = this.state.roomSettings.minHeight;
+        let minRoomWidth  = this.state.roomSettings.minWidth;
+        let maxRoomHeight = this.state.roomSettings.maxHeight;
+        let maxRoomWidth  = this.state.roomSettings.maxWidth;
 
 
 
@@ -144,8 +147,8 @@ class GameOfLifeComponent extends React.Component {
             let roomWidth     = minRoomWidth  + (Math.floor((maxRoomWidth  - minRoomWidth )*Math.random() ));
 
             let doorPosition = {
-                height: 1 +  (Math.floor((roomHeight -2 )*Math.random() )),
-                width:  1 +  (Math.floor((roomWidth  -2 )*Math.random() ))
+                height: 2 +  (Math.floor((roomHeight -3 )*Math.random() )),
+                width:  2 +  (Math.floor((roomWidth  -3 )*Math.random() ))
             }
 
             console.log(randomColumn);
@@ -155,46 +158,43 @@ class GameOfLifeComponent extends React.Component {
             //currentTile.row     = 5+ roomCounter;
 
 
-            for (let col = 0; col < roomWidth; col++){
-                for(let row = 0; row <  roomHeight; row++){
+            for (let col = 0; col <= roomWidth; col++){
+                for(let row = 0; row <=  roomHeight; row++){
                     let currentTile = Object.assign({}, this.state.tiles.floor); 
                     let thisCol = col ;
                     let thisRow = row ;
                     currentTile.column  = thisCol;
                     currentTile.row     = thisRow;
 
-                    if( (col== 0 ) || (col == roomWidth  -1 ) ||
-                        (row== 0 ) || (row == roomHeight -1 )){
+
+                    if( (col== 1 ) || (col == roomWidth  -1 ) ||
+                        (row== 1 ) || (row == roomHeight -1 )){
                         currentTile = Object.assign({}, this.state.tiles.wall); 
                         currentTile.column  = thisCol + randomColumn;
                         currentTile.row     = thisRow + randomRow;
-                        //let currentTile = Object.assign({}, this.state.tiles.wall); 
-
-                        //let originalTile = this.state.gameBoard[ (this.state.rows * currentTile.column) + currentTile.column  ] ;
-                        //console.log( originalTile );
                         
-                        if( (  (col) == doorPosition.width ) || ((row) == doorPosition.height ) ){
+                        if( (   (col) == doorPosition.width  ) ||
+                                (row) == doorPosition.height ){
                             currentTile = Object.assign({}, this.state.tiles.door);
                             currentTile.column  = thisCol + randomColumn;
                             currentTile.row     = thisRow + randomRow;     
                         }
-                        
-
                     }
-                    if( ( currentTile.column < this.state.columns ) && ( currentTile.row <= this.state.rows )  ){
+
+                    if( (col== 0 ) || (col == roomWidth   ) ||
+                        (row== 0 ) || (row == roomHeight  )){
+                        currentTile = Object.assign({}, this.state.tiles.floor); 
+                        currentTile.column  = thisCol + randomColumn;
+                        currentTile.row     = thisRow + randomRow;
+                    }
+
+                    
+                    if( ( currentTile.column    < this.state.columns -1 ) &&
+                        ( currentTile.column    > 0 ) &&
+                        ( currentTile.row       < this.state.rows -1 ) &&
+                        ( currentTile.row       > 0 )  ){
                         currentGameBoard[ ( currentTile.row * this.state.columns  ) + currentTile.column ] = currentTile;
                     }
-                /*
-                if((col==0 ) ||  (col == this.state.columns -1) ||
-                    (row== 0) || (row == this.state.rows    -1)){
-                        currentTile = Object.assign({}, this.state.tiles.wall);            
-                        currentTile.column = col;
-                        currentTile.row    = row;
-                }
-                */
-                //mapArray.push( currentTile );                
-
-
 
 
                 }
