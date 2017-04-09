@@ -127,8 +127,7 @@ class GameOfLifeComponent extends React.Component {
         
         let minRow = 1;
         let maxRow = this.state.rows -2; 
-        let rangeRow = maxRow - minRow;
-        
+        let rangeRow = maxRow - minRow; 
 
         let minRoomHeight = 4;
         let minRoomWidth  = 4;
@@ -136,39 +135,50 @@ class GameOfLifeComponent extends React.Component {
         let maxRoomWidth  = 8;
 
         for (let roomCounter = 0; roomCounter < roomsCount; roomCounter++  ){ 
-
-            let randomRow    = minRow    + (Math.floor (rangeRow    * Math.random()) );
-            let randomColumn = minColumn + (Math.floor (rangeColumn * Math.random()) );
+            let randomRow     = minRow    + (Math.floor (rangeRow    * Math.random()) );
+            let randomColumn  = minColumn + (Math.floor (rangeColumn * Math.random()) );
             let roomHeight    = minRoomHeight + (Math.floor((maxRoomHeight - minRoomHeight)*Math.random() ));
             let roomWidth     = minRoomWidth  + (Math.floor((maxRoomWidth  - minRoomWidth )*Math.random() ));
 
             let doorPosition ={
-                height: 1 + (Math.floor((roomHeight -2)*Math.random() )),
-                width: 1 +  (Math.floor((roomWidth -2)*Math.random() ))
+                height: 1 +  (Math.floor((roomHeight -2 )*Math.random() )),
+                width:  1 +  (Math.floor((roomWidth  -2 )*Math.random() ))
             }
 
-            console.log(roomWidth);
-            console.log(roomHeight);
-            
-            for (let x = 0; x < roomWidth; x++){
-                for(let y = 0; y <  roomHeight; y++){
-                    let currentTile = Object.assign({}, this.state.tiles.wall); 
+            console.log(randomColumn);
 
-                    if( (x==0 ) || (x == roomWidth  -1 ) ||
-                        (y== 0) || (y == roomHeight -1 )){
+            /*
+            for (let col = 0; col < roomWidth; col++){
+                for(let row = 0; row <  roomHeight; row++){
+                    let currentTile = Object.assign({}, this.state.tiles.floor); 
+                    let thisCol = col + randomColumn;
+                    let thisRow = row + randomRow;
+                    currentTile.column  = thisCol;
+                    currentTile.row     = thisRow;
+
+                    if( (col== 0 ) || (col == roomWidth  -1 ) ||
+                        (row== 0 ) || (row == roomHeight -1 )){
+                        currentTile = Object.assign({}, this.state.tiles.wall); 
+                        currentTile.column  = thisCol;
+                        currentTile.row     = thisRow;
                         //let currentTile = Object.assign({}, this.state.tiles.wall); 
-                        currentTile.row    = randomRow + y;
-                        currentTile.column = randomColumn + x ;
 
-                        if( (x == doorPosition.height ) || (y == doorPosition.width ) ){
+                        let originalTile = this.state.gameBoard[ (this.state.rows * currentTile.column) + currentTile.column  ] ;
+                        //console.log( originalTile );
+
+                        if( (col == doorPosition.width ) || (row == doorPosition.height ) ){
                             currentTile = Object.assign({}, this.state.tiles.door);
-                            //currentGameBoard[ currentTile.row  + ((this.state.columns) * currentTile.column) ] = currentTile;
-                            console.log(currentTile);
+                            currentTile.column  = col;
+                            currentTile.row     = row;                        
                         }
-                        currentGameBoard[ currentTile.row  + ((this.state.columns) * currentTile.column) ] = currentTile;
+
                     }
+                    
+
+                    currentGameBoard[ ( currentTile.row * this.state.columns  ) + currentTile.column ] = currentTile;
                 }
             }
+            */
         }
         //[(row * this.state.columns) + column ]
         //console.log(path)
@@ -200,6 +210,8 @@ class Tile extends React.Component{
             return "wall"
         }else if (this.props.tileName === "enemy"){
             return "enemy"
+        }else if (this.props.tileName === "door"){
+            return "door"
         }
     }
 
