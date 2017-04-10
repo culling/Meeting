@@ -12,3 +12,6 @@ rect.door {
 
 rect.treasure {
   fill: goldenrod; }
+
+circle.treasure {
+  fill: gold; }

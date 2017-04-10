@@ -17,6 +17,7 @@ class GameOfLifeComponent extends React.Component {
                 maxHeight: 8,
                 maxWidth: 8,
                 wallThickness: 1,
+                maxDoorsCount: 4,
                 roomsCount: 40
             },
             treasureSettings:{
@@ -102,6 +103,24 @@ class GameOfLifeComponent extends React.Component {
                                             tileName   = {tile.name}
 
                                     />)}
+                                    {this.state.gameBoard.map((tile, i) => 
+                                        {if( (tile.name !== "floor") &&
+                                             (tile.name !== "wall")  &&
+                                             (tile.name !== "door")
+                                             )
+                                        return <ItemTile 
+                                            key={i}
+                                            tileHeight = {this.state.tileHeight}
+                                            tileWidth  = {this.state.tileWidth}
+                                            row        = {tile.row}
+                                            column     = {tile.column}
+                                            tileName   = {tile.name}
+                                            tile       = {tile}
+                                    />
+                                    }
+                                    )}
+
+
                             </svg>
                             </div>
                         </div>
@@ -166,11 +185,14 @@ class GameOfLifeComponent extends React.Component {
             let randomRow     =  (Math.floor (rangeRow    * Math.random()) ) - minRoomHeight ;
             let randomColumn  =  (Math.floor (rangeColumn * Math.random()) ) - minRoomWidth;
 
+            let doorCounter   =  Math.round((this.state.roomSettings.maxDoorsCount) * Math.random()) ;
+            console.log(doorCounter);
+            
             let doorPosition = {
                 height: (2* wallThickness) +  (Math.floor((roomHeight -3 )*Math.random() )),
                 width:  (2* wallThickness) +  (Math.floor((roomWidth  -3 )*Math.random() ))
             }
-
+            
 
             //each cell of the room
             for (let col = 0; col <= roomWidth; col++){
@@ -189,11 +211,13 @@ class GameOfLifeComponent extends React.Component {
                         currentTile.row     = thisRow + randomRow;
                         
                         //add door on wall
-                        if( (   (col) == doorPosition.width  ) ||
-                                (row) == doorPosition.height ){
+                        if(( (  (col) == doorPosition.width  ) ||
+                                (row) == doorPosition.height )
+                                ){
                             currentTile = Object.assign({}, this.state.tiles.door);
                             currentTile.column  = thisCol + randomColumn;
-                            currentTile.row     = thisRow + randomRow;     
+                            currentTile.row     = thisRow + randomRow;
+                            doorCounter--; 
                         }
                     }else if ((col== 1 + wallThickness ) || (col == (roomWidth -1 )-wallThickness ) ||
                         (row== 1 + wallThickness ) || (row == (roomHeight -1) -wallThickness )){
@@ -274,11 +298,11 @@ class Tile extends React.Component{
         }else if (this.props.tileName === "wall"){
             return "wall"
         }else if (this.props.tileName === "enemy"){
-            return "enemy"
+            return "floor"
         }else if (this.props.tileName === "door"){
             return "door"
         }else if (this.props.tileName === "treasure"){
-            return "treasure"
+            return "floor"
         }
     }
 
@@ -297,11 +321,42 @@ class Tile extends React.Component{
                     />
         )
     }
-
-
 }
 
+class ItemTile extends React.Component{
+    constructor(){
+        super();
+    }
 
+    _getCircleStyle(){
+        if (this.props.tileName === "enemy"){
+            return "enemy"
+        }else if (this.props.tileName === "treasure"){
+            return "treasure"
+        }else if (this.props.tileName === "player"){
+            return "player"
+        }
+
+    }
+
+    render(){
+        return(
+            
+            <circle cx={ (this.props.tileWidth  * this.props.column) + (this.props.tileWidth  / 2) } 
+                    cy={ this.props.tileHeight * this.props.row      + (this.props.tileHeight / 2)}
+                    r={this.props.tileHeight / Math.PI}
+                    height={this.props.tileHeight} 
+                    width={this.props.tileWidth} 
+                    stroke="white"
+                    className={this._getCircleStyle() +
+                     " column " + this.props.column +
+                     " row "    + this.props.row
+                    
+                    }
+                    />
+        )
+    }
+}
 
 ReactDOM.render (
     <GameOfLifeComponent />, document.getElementById('mount-point')
