@@ -26,33 +26,68 @@ class GameOfLifeComponent extends React.Component {
             },
             enemySettings:{
                 chance: 5,
-                treasureCount: 10
+                treasureCount: 10,
+                maxEnemyCount: 9
+            },
+            enemys:{
+                goblin:{
+                    type:"enemy",
+                    name:"goblin",
+                    baseHp: 10,
+                    baseAtk: 4,
+                    baseDef: 4,
+                    baseXp:  40
+                },
+                troll:{
+                    type:"enemy",
+                    name:"troll",
+                    baseHp: 12,
+                    baseAtk: 5,
+                    baseDef: 5,
+                    baseXp:  50                    
+                }
             },
 
             tiles:{
                 wall:{
+                    type: "structure",
                     name: "wall",
                     space: "solid",
                     health: 9999,
                     destructable: false
                 },
                 floor: {
+                    type: "structure",                    
                     name:  "floor",
                     space: "open",
                     health: 9999,
                     destructable: false
                 },
                 door:{
+                    type: "structure",                    
                     name: "door",
                     space: "open",
                     health: 1,
                     destructable: true                    
                 },
                 treasure:{
+                    type: "item",                    
                     name: "treasure",
                     space: "open",
                     health: 1,
                     destructable: true
+                },
+                enemy:{
+                    type: "enemy",                    
+                    name: "enemy",
+                    space: "solid",
+                    destructable: true                    
+                },
+                player:{
+                    type: "player",
+                    name: "player",
+                    space: "solid",
+                    destructable: true                                        
                 }
             }
 
@@ -103,6 +138,8 @@ class GameOfLifeComponent extends React.Component {
                                             tileName   = {tile.name}
 
                                     />)}
+
+
                                     {this.state.gameBoard.map((tile, i) => 
                                         {if( (tile.name !== "floor") &&
                                              (tile.name !== "wall")  &&
@@ -271,6 +308,27 @@ class GameOfLifeComponent extends React.Component {
             return newTile;
         });
 
+        //Add Enemys
+        let enemyCounter = this.state.enemySettings.maxEnemyCount;
+        let currentGameBoardWithTreasure = currentGameBoard.map( tile => {
+            let newTile = Object.assign({}, tile);
+            let chanceOfEnemy = this.state.enemySettings.chance;
+            let enemyLevel  = Math.ceil(100 * Math.random()) - (100 - chanceOfEnemy);
+            
+            if ((enemyLevel <= 0) || (enemyCounter <= 0) ) {
+                //no treasure
+            }else if (tile.name == "floor") {
+                let originalTile        = Object.assign({}, tile);    
+                newTile                 = Object.assign({},this.state.enemys.goblin );
+                newTile.row             = originalTile.row;
+                newTile.column          = originalTile.column;
+                newTile.enemyLevel      = enemyLevel;
+                
+                enemyCounter--
+            }
+            return newTile;
+        });
+
         this.setState({gameBoard: currentGameBoardWithTreasure});
     }
 
@@ -286,6 +344,10 @@ class GameOfLifeComponent extends React.Component {
 
 
 }
+
+
+
+
 
 class Tile extends React.Component{
     constructor(){
