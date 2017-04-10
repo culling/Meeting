@@ -16,7 +16,16 @@ class GameOfLifeComponent extends React.Component {
                 minHeight:  5,
                 maxHeight: 8,
                 maxWidth: 8,
-                roomsCount: 20
+                wallThickness: 1,
+                roomsCount: 40
+            },
+            treasureSettings:{
+                chance: 5,
+                treasureCount: 10
+            },
+            enemySettings:{
+                chance: 5,
+                treasureCount: 10
             },
 
             tiles:{
@@ -37,11 +46,13 @@ class GameOfLifeComponent extends React.Component {
                     space: "open",
                     health: 1,
                     destructable: true                    
+                },
+                treasure:{
+                    name: "treasure",
+                    space: "open",
+                    health: 1,
+                    destructable: true
                 }
-            },
-            treasure:{
-                chance: 5,
-                treasureCount: 20
             }
 
 
@@ -140,21 +151,24 @@ class GameOfLifeComponent extends React.Component {
         let minRoomWidth  = this.state.roomSettings.minWidth;
         let maxRoomHeight = this.state.roomSettings.maxHeight;
         let maxRoomWidth  = this.state.roomSettings.maxWidth;
+        let wallThickness = this.state.roomSettings.wallThickness;
 
 
 
         //room creation
         for (let roomCounter = 0; roomCounter < roomsCount; roomCounter++  ){ 
-            //start of room position 
-            let randomRow     =  (Math.floor (rangeRow    * Math.random()) );
-            let randomColumn  =  (Math.floor (rangeColumn * Math.random()) );
+
             //room height and width
             let roomHeight    = minRoomHeight + (Math.floor((maxRoomHeight - minRoomHeight)*Math.random() ));
             let roomWidth     = minRoomWidth  + (Math.floor((maxRoomWidth  - minRoomWidth )*Math.random() ));
 
+            //start of room position 
+            let randomRow     =  (Math.floor (rangeRow    * Math.random()) ) - minRoomHeight ;
+            let randomColumn  =  (Math.floor (rangeColumn * Math.random()) ) - minRoomWidth;
+
             let doorPosition = {
-                height: 2 +  (Math.floor((roomHeight -3 )*Math.random() )),
-                width:  2 +  (Math.floor((roomWidth  -3 )*Math.random() ))
+                height: (2* wallThickness) +  (Math.floor((roomHeight -3 )*Math.random() )),
+                width:  (2* wallThickness) +  (Math.floor((roomWidth  -3 )*Math.random() ))
             }
 
 
@@ -181,6 +195,11 @@ class GameOfLifeComponent extends React.Component {
                             currentTile.column  = thisCol + randomColumn;
                             currentTile.row     = thisRow + randomRow;     
                         }
+                    }else if ((col== 1 + wallThickness ) || (col == (roomWidth -1 )-wallThickness ) ||
+                        (row== 1 + wallThickness ) || (row == (roomHeight -1) -wallThickness )){
+                            currentTile = Object.assign({}, this.state.tiles.floor);
+                            currentTile.column  = thisCol + randomColumn;
+                            currentTile.row     = thisRow + randomRow;    
                     }
 
                     //create border around rooms to make the whole thing walkable
@@ -205,9 +224,30 @@ class GameOfLifeComponent extends React.Component {
                 }
             }
         }
-        
 
-        this.setState({gameBoard: currentGameBoard});
+
+        //Add Treasure
+        let treasureCounter = this.state.treasureSettings.treasureCount;
+       
+        let currentGameBoardWithTreasure = currentGameBoard.map( tile => {
+            let newTile = Object.assign({}, tile);
+            let chanceOfTreasure = this.state.treasureSettings.chance;
+            let treasureQuality  = Math.ceil(100 * Math.random()) - (100 - chanceOfTreasure);
+            
+            if ((treasureQuality <= 0) || (treasureCounter <= 0) ) {
+                //no treasure
+            }else if (tile.name == "floor") {
+                let originalTile = Object.assign({}, tile);    
+                newTile        = Object.assign({},this.state.tiles.treasure);
+                newTile.row    = originalTile.row;
+                newTile.column          = originalTile.column;
+                newTile.treasureQuality = treasureQuality;
+                treasureCounter--
+            }
+            return newTile;
+        });
+
+        this.setState({gameBoard: currentGameBoardWithTreasure});
     }
 
 
@@ -237,6 +277,8 @@ class Tile extends React.Component{
             return "enemy"
         }else if (this.props.tileName === "door"){
             return "door"
+        }else if (this.props.tileName === "treasure"){
+            return "treasure"
         }
     }
 

@@ -8,4 +8,7 @@ rect.wall {
   fill: #143214; }
 
 rect.door {
-  fill: #c86400; }
+  fill: #826400; }
+
+rect.treasure {
+  fill: goldenrod; }
