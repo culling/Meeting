@@ -8,6 +8,7 @@ class GameOfLifeComponent extends React.Component {
             tileWidth: 20,
             autoTick: true,
             gameBoard: [],
+            objectStore:[],
             viewPortCSS: {
                 "backgroundColor":"blue"
             },
@@ -194,8 +195,8 @@ class GameOfLifeComponent extends React.Component {
 
                                     />)}
 
-
-                                    {this.state.gameBoard.map((tile, i) => 
+                                    
+                                    {this.state.objectStore.map((tile, i) => 
                                         {if( (tile.name !== "floor") &&
                                              (tile.name !== "wall")  &&
                                              (tile.name !== "door")
@@ -231,7 +232,11 @@ class GameOfLifeComponent extends React.Component {
 
 
             let player = Object.assign({},  this.state.player);
-            let originalGameBoard = this.state.gameBoard.map(tile => tile);
+
+            originalObjectStore =  Object.assign({},  this.state.objectStore);
+            originalObjectStore[(player.row * this.state.columns) + player.column  ] = oldPlayerTile;
+
+            /*let originalGameBoard = this.state.gameBoard.map(tile => tile);
             let originalPlayerTile = originalGameBoard[(player.row * this.state.columns) + player.column]
             console.log(player);
             console.log(originalPlayerTile);
@@ -246,6 +251,7 @@ class GameOfLifeComponent extends React.Component {
 
             //this.setState({player: player});
             this.setState({gameBoard: originalGameBoard});
+            */
         }
     this.forceUpdate();
     }
@@ -363,26 +369,10 @@ class GameOfLifeComponent extends React.Component {
         }
 
 
+
+        //add Objects
         //Add Treasure
         let treasureCounter = this.state.treasureSettings.treasureCount;
-       
-        let currentGameBoardWithTreasure = currentGameBoard.map( tile => {
-            let newTile = Object.assign({}, tile);
-            let chanceOfTreasure = this.state.treasureSettings.chance;
-            let treasureQuality  = Math.ceil(100 * Math.random()) - (100 - chanceOfTreasure);
-            
-            if ((treasureQuality <= 0) || (treasureCounter <= 0) ) {
-                //no treasure
-            }else if (tile.name == "floor") {
-                let originalTile = Object.assign({}, tile);    
-                newTile        = Object.assign({},this.state.tiles.treasure);
-                newTile.row    = originalTile.row;
-                newTile.column          = originalTile.column;
-                newTile.treasureQuality = treasureQuality;
-                treasureCounter--
-            }
-            return newTile;
-        });
 
         //Add Creatures
         let boss = {
@@ -395,57 +385,86 @@ class GameOfLifeComponent extends React.Component {
             counter: 1
         }
 
-        let currentGameBoardWithCreatures = currentGameBoardWithTreasure.map( tile => {
-            let newTile = Object.assign({}, tile);
+
+        //let currentGameBoardWithTreasure = currentGameBoard.map( tile => {
+        //let objectStore = currentGameBoard.map( tile => {
+        //let objectStore = [];
+        let objectStore = currentGameBoard.reduce((currentResults, tile) => {
+            let newTile             = Object.assign({}, tile);
+            let originalTile        = Object.assign({}, tile);    
+
+            let chanceOfTreasure = this.state.treasureSettings.chance;
+            let treasureQuality  = Math.ceil(100 * Math.random()) - (100 - chanceOfTreasure);
+
             let chanceOfEnemy = this.state.enemySettings.chance;
             let enemyLevel  = Math.ceil(100 * Math.random()) - (100 - chanceOfEnemy);
-            
-            if (tile.name == "floor") {
-                let originalTile        = Object.assign({}, tile);    
-                if ((enemyLevel > 0) && (enemyCounter > 0) ) {
-                //no treasure
-                    let creatureTile = Object.assign({},this.state.enemys.goblin );
-                    newTile = creatureTile;
-                        newTile.enemyLevel      = enemyLevel;
-                        newTile.enemyHp         = enemyLevel * this.state.enemys.goblin.baseHp;
-                        newTile.enemyXp         = enemyLevel * this.state.enemys.goblin.baseXp;
-                        newTile.enemyDef        = enemyLevel * this.state.enemys.goblin.baseDef;
-                        newTile.enemyAtk        = enemyLevel * this.state.enemys.goblin.baseAtk;
-                    enemyCounter--
-                }else if( (boss.counter > 0)&&( Math.random() > 0.98 )){
-                    let creatureTile = boss.tile;
-                    newTile = creatureTile;
-                        newTile.enemyLevel      = enemyLevel;
-                        newTile.enemyHp         = enemyLevel * this.state.enemys.goblin.baseHp;
-                        newTile.enemyXp         = enemyLevel * this.state.enemys.goblin.baseXp;
-                        newTile.enemyDef        = enemyLevel * this.state.enemys.goblin.baseDef;
-                        newTile.enemyAtk        = enemyLevel * this.state.enemys.goblin.baseAtk;
-                    boss.counter--;
-                }else if ( 
-                            ( (player.counter > 0)&&
-                                ( originalTile.row > (this.state.rows / 2)  &&
-                                ( Math.random() > 0.98 ))) 
-                        || 
-                            ((player.counter > 0)&&
-                                ( originalTile.row == (this.state.rows - 2) ))) 
-                    {
-                    let creatureTile = player.tile;
-                    newTile = creatureTile;
-                    player.counter--;
 
-                    this.state.player.row       = originalTile.row;
-                    this.state.player.column    = originalTile.column;
-                }else{
-                    newTile = originalTile;
+            if(tile.name == "floor"){
+                if ((treasureQuality <= 0) || (treasureCounter <= 0) ) {
+                    
+
+                    if ((enemyLevel > 0) && (enemyCounter > 0)) {
+                    //no treasure
+                        let creatureTile = Object.assign({},this.state.enemys.goblin );
+                        newTile = creatureTile;
+                            newTile.enemyLevel      = enemyLevel;
+                            newTile.enemyHp         = enemyLevel * this.state.enemys.goblin.baseHp;
+                            newTile.enemyXp         = enemyLevel * this.state.enemys.goblin.baseXp;
+                            newTile.enemyDef        = enemyLevel * this.state.enemys.goblin.baseDef;
+                            newTile.enemyAtk        = enemyLevel * this.state.enemys.goblin.baseAtk;
+                        enemyCounter--
+                    }else if( (boss.counter > 0)&&( Math.random() > 0.98 )){
+                        let creatureTile = boss.tile;
+                        newTile = creatureTile;
+                            newTile.enemyLevel      = enemyLevel;
+                            newTile.enemyHp         = enemyLevel * this.state.enemys.goblin.baseHp;
+                            newTile.enemyXp         = enemyLevel * this.state.enemys.goblin.baseXp;
+                            newTile.enemyDef        = enemyLevel * this.state.enemys.goblin.baseDef;
+                            newTile.enemyAtk        = enemyLevel * this.state.enemys.goblin.baseAtk;
+                        boss.counter--;
+                    }else if ( 
+                                ( (player.counter > 0)&&
+                                    ( originalTile.row > (this.state.rows / 2)  &&
+                                    ( Math.random() > 0.98 ))) 
+                            || 
+                                ((player.counter > 0)&&
+                                    ( originalTile.row == (this.state.rows - 2) ))) 
+                        {
+                        let creatureTile = player.tile;
+                        newTile = creatureTile;
+                        player.counter--;
+
+                        this.state.player.row       = originalTile.row;
+                        this.state.player.column    = originalTile.column;
+                    }else{
+                        newTile = originalTile;
+                    }
+
+
+                }else {
+                //let originalTile    = Object.assign({}, tile);    
+                    newTile                 = Object.assign({},this.state.tiles.treasure);
+                    newTile.treasureQuality = treasureQuality;
+                    treasureCounter--
                 }
+                newTile.row             = originalTile.row;
+                newTile.column          = originalTile.column;
+                console.log(currentResults);
+                //currentResults.push(newTile);
+                return newTile;
+            }
+            /*
             newTile.row             = originalTile.row;
             newTile.column          = originalTile.column;
-            }
             return newTile;
-        });
+            */
+        },[]);
+
+        console.log(objectStore);
+        this.state.objectStore = objectStore;
 
         console.log("Board Set");
-        this.setState({gameBoard: currentGameBoardWithCreatures});
+        this.setState({gameBoard: currentGameBoard});
     }
 
 
