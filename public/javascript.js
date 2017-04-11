@@ -159,7 +159,9 @@ class GameOfLifeComponent extends React.Component {
 
     componentDidMount(){
         this._generateRandomRooms( this.state.roomSettings.roomsCount );
-        console.log(this.state.player);
+        console.log(this.state.player);    
+        document.addEventListener('keydown', this._keyboardEvents.bind(this));
+        
     }
 
     render(){
@@ -177,7 +179,8 @@ class GameOfLifeComponent extends React.Component {
                             </div>
                             <div className="col-md-6">
 
-                            <svg    width={this.state.tileWidth * this.state.columns}
+                            <svg    
+                                    width={this.state.tileWidth * this.state.columns}
                                     height={this.state.tileHeight * this.state.rows}  
                                     style={this.state.viewPortCSS}
                                     >
@@ -220,9 +223,33 @@ class GameOfLifeComponent extends React.Component {
         );
     };
 
-    _keyboardEvents(){
-        
+    _keyboardEvents(event){
+        console.log("Event");
+        //console.log(event);
+        if(event.key== "ArrowUp"){
+            console.log("Arrow Up");
+
+
+            let player = Object.assign({},  this.state.player);
+            let originalGameBoard = this.state.gameBoard.map(tile => tile);
+            let originalPlayerTile = originalGameBoard[(player.row * this.state.columns) + player.column]
+            console.log(player);
+            console.log(originalPlayerTile);
+
+            let floorTile = Object.assign({}, this.state.tiles.enemy );
+            let oldPlayerTile           = floorTile;
+                oldPlayerTile.row       = originalPlayerTile.row;
+                oldPlayerTile.column    = originalPlayerTile.column;
+            originalGameBoard[(player.row * this.state.columns) + player.column  ] = oldPlayerTile;
+
+            //player.row++;
+
+            //this.setState({player: player});
+            this.setState({gameBoard: originalGameBoard});
+        }
+    this.forceUpdate();
     }
+
 
 
     _generateMap(){
