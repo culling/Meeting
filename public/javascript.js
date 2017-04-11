@@ -38,9 +38,9 @@ class GameOfLifeComponent extends React.Component {
                     baseDef: 4,
                     baseXp:  40
                 },
-                troll:{
+                demon:{
                     type:"enemy",
-                    name:"troll",
+                    name:"demon",
                     baseHp: 12,
                     baseAtk: 5,
                     baseDef: 5,
@@ -78,7 +78,7 @@ class GameOfLifeComponent extends React.Component {
                     destructable: true
                 },
                 enemy:{
-                    type: "enemy",                    
+                    type: "enemy",
                     name: "enemy",
                     space: "solid",
                     destructable: true                    
@@ -309,27 +309,56 @@ class GameOfLifeComponent extends React.Component {
         });
 
         //Add Enemys
+        let boss = {
+            tile: Object.assign({},this.state.enemys.demon ),
+            counter: 1
+        }
         let enemyCounter = this.state.enemySettings.maxEnemyCount;
-        let currentGameBoardWithTreasure = currentGameBoard.map( tile => {
+        let currentGameBoardWithEnemies = currentGameBoardWithTreasure.map( tile => {
             let newTile = Object.assign({}, tile);
             let chanceOfEnemy = this.state.enemySettings.chance;
             let enemyLevel  = Math.ceil(100 * Math.random()) - (100 - chanceOfEnemy);
             
-            if ((enemyLevel <= 0) || (enemyCounter <= 0) ) {
-                //no treasure
-            }else if (tile.name == "floor") {
+            if (tile.name == "floor") {
                 let originalTile        = Object.assign({}, tile);    
-                newTile                 = Object.assign({},this.state.enemys.goblin );
-                newTile.row             = originalTile.row;
-                newTile.column          = originalTile.column;
-                newTile.enemyLevel      = enemyLevel;
+                if ((enemyLevel > 0) && (enemyCounter > 0) ) {
+                //no treasure
+                    let creatureTile = Object.assign({},this.state.enemys.goblin );
+                    newTile = creatureTile;
+                        newTile.row             = originalTile.row;
+                        newTile.column          = originalTile.column;
+                        newTile.enemyLevel      = enemyLevel;
+                        newTile.enemyHp         = enemyLevel * this.state.enemys.goblin.baseHp;
+                        newTile.enemyXp         = enemyLevel * this.state.enemys.goblin.baseXp;
+                        newTile.enemyDef        = enemyLevel * this.state.enemys.goblin.baseDef;
+                        newTile.enemyAtk        = enemyLevel * this.state.enemys.goblin.baseAtk;
+                    enemyCounter--
+                }else if( (boss.counter > 0)&&( Math.random() > 0.98 )){
+                    let creatureTile = boss.tile;
+                    newTile = creatureTile;
+                        newTile.row             = originalTile.row;
+                        newTile.column          = originalTile.column;
+                        newTile.enemyLevel      = enemyLevel;
+                        newTile.enemyHp         = enemyLevel * this.state.enemys.goblin.baseHp;
+                        newTile.enemyXp         = enemyLevel * this.state.enemys.goblin.baseXp;
+                        newTile.enemyDef        = enemyLevel * this.state.enemys.goblin.baseDef;
+                        newTile.enemyAtk        = enemyLevel * this.state.enemys.goblin.baseAtk;
+                    boss.counter--;
+                }else{
+
+
+                    newTile = originalTile;
+                }
                 
-                enemyCounter--
+
+
             }
+
+
             return newTile;
         });
 
-        this.setState({gameBoard: currentGameBoardWithTreasure});
+        this.setState({gameBoard: currentGameBoardWithEnemies});
     }
 
 
@@ -355,17 +384,14 @@ class Tile extends React.Component{
     }
 
     _getRectStyle(){
-        if(this.props.tileName === "floor"){
-            return "floor"
-        }else if (this.props.tileName === "wall"){
+        if (this.props.tileName === "wall"){
             return "wall"
-        }else if (this.props.tileName === "enemy"){
-            return "floor"
         }else if (this.props.tileName === "door"){
             return "door"
-        }else if (this.props.tileName === "treasure"){
+        } else{
             return "floor"
         }
+
     }
 
     render(){
@@ -391,12 +417,16 @@ class ItemTile extends React.Component{
     }
 
     _getCircleStyle(){
-        if (this.props.tileName === "enemy"){
-            return "enemy"
+        if (this.props.tileName === "goblin"){
+            return "goblin"
+        }else if (this.props.tileName === "demon"){
+            return "demon"
         }else if (this.props.tileName === "treasure"){
             return "treasure"
         }else if (this.props.tileName === "player"){
             return "player"
+        }else{
+            console.log(this.props.tileName)
         }
 
     }
