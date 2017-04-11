@@ -47,7 +47,59 @@ class GameOfLifeComponent extends React.Component {
                     baseXp:  50                    
                 }
             },
-
+            player:{
+                type: "player",
+                name: "player",
+                baseHp: 120,
+                baseAtk: 10,
+                baseDef: 10,
+                hp:     120,
+                weapon: {
+                    name:   "Stick",
+                    dmg:    2,
+                },
+                levelScale:[
+                    {
+                        level: 1,
+                        xpRequired: 100,
+                        baseHp: 120,
+                        baseAtk: 10,
+                        baseDef: 10,
+                        hp:     120,
+                    },{
+                        level: 2,
+                        xpRequired: 250,
+                        baseHp: 220,
+                        baseAtk: 15,
+                        baseDef: 15,
+                        hp:     220,
+                    },{
+                        level: 3,
+                        xpRequired: 400,
+                        baseHp: 320,
+                        baseAtk: 20,
+                        baseDef: 20,
+                        hp:     320,
+                    }
+                    ]
+            },
+            weapons:[
+                {
+                    name:   "Stick",
+                    dmg:    2
+                },
+                {
+                    name:   "Crowbar",
+                    dmg:    3
+                },
+                {
+                    name:   "Iron Sword",
+                    dmg:    5
+                },{
+                    name:   "Crystal Sword",
+                    dmg:    8
+                }
+            ],
             tiles:{
                 wall:{
                     type: "structure",
@@ -107,7 +159,7 @@ class GameOfLifeComponent extends React.Component {
 
     componentDidMount(){
         this._generateRandomRooms( this.state.roomSettings.roomsCount );
-
+        console.log(this.state.player);
     }
 
     render(){
@@ -168,6 +220,11 @@ class GameOfLifeComponent extends React.Component {
         );
     };
 
+    _keyboardEvents(){
+        
+    }
+
+
     _generateMap(){
         let mapArray =  this.state.gameBoard.map(tile => tile);
 
@@ -178,14 +235,10 @@ class GameOfLifeComponent extends React.Component {
                 
                 if((col==0 ) ||  (col == this.state.columns -1) ||
                     (row== 0) || (row == this.state.rows    -1)){
-
                         currentTile = Object.assign({}, this.state.tiles.wall);
-
                 }
-            
                 currentTile.column = col;
                 currentTile.row    = row;
-
                 mapArray.push( currentTile );                
             }
         }
@@ -209,8 +262,6 @@ class GameOfLifeComponent extends React.Component {
         let maxRoomWidth  = this.state.roomSettings.maxWidth;
         let wallThickness = this.state.roomSettings.wallThickness;
 
-
-
         //room creation
         for (let roomCounter = 0; roomCounter < roomsCount; roomCounter++  ){ 
 
@@ -223,7 +274,7 @@ class GameOfLifeComponent extends React.Component {
             let randomColumn  =  (Math.floor (rangeColumn * Math.random()) ) - minRoomWidth;
 
             let doorCounter   =  Math.round((this.state.roomSettings.maxDoorsCount) * Math.random()) ;
-            console.log(doorCounter);
+            //console.log(doorCounter);
             
             let doorPosition = {
                 height: (2* wallThickness) +  (Math.floor((roomHeight -3 )*Math.random() )),
@@ -280,8 +331,6 @@ class GameOfLifeComponent extends React.Component {
                         ( currentTile.row       > 0 )  ){
                         currentGameBoard[ ( currentTile.row * this.state.columns  ) + currentTile.column ] = currentTile;
                     }
-
-
                 }
             }
         }
@@ -308,13 +357,18 @@ class GameOfLifeComponent extends React.Component {
             return newTile;
         });
 
-        //Add Enemys
+        //Add Creatures
         let boss = {
             tile: Object.assign({},this.state.enemys.demon ),
             counter: 1
         }
         let enemyCounter = this.state.enemySettings.maxEnemyCount;
-        let currentGameBoardWithEnemies = currentGameBoardWithTreasure.map( tile => {
+        let player = {
+            tile: Object.assign({}, this.state.tiles.player),
+            counter: 1
+        }
+
+        let currentGameBoardWithCreatures = currentGameBoardWithTreasure.map( tile => {
             let newTile = Object.assign({}, tile);
             let chanceOfEnemy = this.state.enemySettings.chance;
             let enemyLevel  = Math.ceil(100 * Math.random()) - (100 - chanceOfEnemy);
@@ -325,8 +379,6 @@ class GameOfLifeComponent extends React.Component {
                 //no treasure
                     let creatureTile = Object.assign({},this.state.enemys.goblin );
                     newTile = creatureTile;
-                        newTile.row             = originalTile.row;
-                        newTile.column          = originalTile.column;
                         newTile.enemyLevel      = enemyLevel;
                         newTile.enemyHp         = enemyLevel * this.state.enemys.goblin.baseHp;
                         newTile.enemyXp         = enemyLevel * this.state.enemys.goblin.baseXp;
@@ -336,30 +388,39 @@ class GameOfLifeComponent extends React.Component {
                 }else if( (boss.counter > 0)&&( Math.random() > 0.98 )){
                     let creatureTile = boss.tile;
                     newTile = creatureTile;
-                        newTile.row             = originalTile.row;
-                        newTile.column          = originalTile.column;
                         newTile.enemyLevel      = enemyLevel;
                         newTile.enemyHp         = enemyLevel * this.state.enemys.goblin.baseHp;
                         newTile.enemyXp         = enemyLevel * this.state.enemys.goblin.baseXp;
                         newTile.enemyDef        = enemyLevel * this.state.enemys.goblin.baseDef;
                         newTile.enemyAtk        = enemyLevel * this.state.enemys.goblin.baseAtk;
                     boss.counter--;
+                }else if ( 
+                            ( (player.counter > 0)&&
+                                ( originalTile.row > (this.state.rows / 2)  &&
+                                ( Math.random() > 0.98 ))) 
+                        || 
+                            ((player.counter > 0)&&
+                                ( originalTile.row == (this.state.rows - 2) ))) 
+                    {
+                    let creatureTile = player.tile;
+                    newTile = creatureTile;
+                    player.counter--;
+
+                    this.state.player.row       = originalTile.row;
+                    this.state.player.column    = originalTile.column;
                 }else{
-
-
                     newTile = originalTile;
                 }
-                
-
-
+            newTile.row             = originalTile.row;
+            newTile.column          = originalTile.column;
             }
-
-
             return newTile;
         });
 
-        this.setState({gameBoard: currentGameBoardWithEnemies});
+        console.log("Board Set");
+        this.setState({gameBoard: currentGameBoardWithCreatures});
     }
+
 
 
     _showState(){

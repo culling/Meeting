@@ -21,3 +21,6 @@ circle.goblin {
 
 circle.demon {
   fill: red; }
+
+circle.player {
+  fill: blue; }
