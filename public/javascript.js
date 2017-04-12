@@ -36,7 +36,7 @@ class GameOfLifeComponent extends React.Component {
                     name:"goblin",
                     baseHp: 10,
                     baseAtk: 4,
-                    baseDef: 4,
+                    baseDef: 1,
                     baseXp:  40
                 },
                 demon:{
@@ -44,13 +44,15 @@ class GameOfLifeComponent extends React.Component {
                     name:"demon",
                     baseHp: 12,
                     baseAtk: 5,
-                    baseDef: 5,
+                    baseDef: 2,
                     baseXp:  50                    
                 }
             },
             player:{
                 type: "player",
                 name: "player",
+                level: 1,
+                xp: 0,
                 baseHp: 120,
                 baseAtk: 10,
                 baseDef: 10,
@@ -251,6 +253,7 @@ class GameOfLifeComponent extends React.Component {
                 if((playerObjectNeighbors.north != undefined) && (playerObjectNeighbors.north.type == "enemy")){
                     console.log("Attacked the "+ playerObjectNeighbors.north.name );
                     //console.log(playerObjectNeighbors);
+                    this._attackEnemy(playerObjectNeighbors.north);
                 }else{
                     player.row--;
                 }
@@ -263,6 +266,7 @@ class GameOfLifeComponent extends React.Component {
                 if((playerObjectNeighbors.south != undefined) && (playerObjectNeighbors.south.type == "enemy")){
                     console.log("Attacked the "+ playerObjectNeighbors.south.name );
                     //console.log(playerObjectNeighbors);
+                    this._attackEnemy(playerObjectNeighbors.south );
                 }else{
                     player.row++;
                 }
@@ -274,6 +278,7 @@ class GameOfLifeComponent extends React.Component {
             if((tileNeighbors.eastTile.name == "floor" )|| (tileNeighbors.eastTile.name == "door" ) ){
                 if((playerObjectNeighbors.east != undefined) && (playerObjectNeighbors.east.type == "enemy")){
                     console.log("Attacked the "+ playerObjectNeighbors.east.name );
+                    this._attackEnemy(playerObjectNeighbors.east );
                 }else{
                     player.column++;
                 }
@@ -285,6 +290,7 @@ class GameOfLifeComponent extends React.Component {
             if((tileNeighbors.westTile.name == "floor" )|| (tileNeighbors.westTile.name == "door" ) ){
                 if((playerObjectNeighbors.west != undefined) && (playerObjectNeighbors.west.type == "enemy")){
                     console.log("Attacked the "+ playerObjectNeighbors.west.name );
+                    this._attackEnemy(playerObjectNeighbors.west);
                 }else{
                     player.column--;
                 }
@@ -302,33 +308,89 @@ class GameOfLifeComponent extends React.Component {
             }}
             return object;
         });
-
         //console.log(newObjectStore)
         this.setState({objectStore: newObjectStore});
-
-//    this.forceUpdate();
+    //    this.forceUpdate();
     }
+
+
+    _attackEnemy(enemy){
+        //console.log(enemy);
+        let originalObjectStore =  this.state.objectStore.map(object => object) ;
+        let originalPlayer = originalObjectStore.filter(object => 
+            {if(object.type === "player"){
+                return object
+            }}
+        )
+        let player = Object.assign({}, originalPlayer[0]);
+        //console.log(player);
+        //console.log(enemy);
+        
+        //This attack
+        let playerAttack = (Math.round((Math.random() * (player.baseAtk + player.weapon.dmg) ) ) + player.level );
+        let enemyAttack  = Math.round((Math.random() * enemy.Atk )* enemy.level);
+        console.log((Math.random() * (player.baseAtk + player.weapon.dmg ) ) );
+
+
+        originalObjectStore.map(object => {
+            if((object.row === (enemy.row) ) && (object.column === enemy.column)){
+                object.enemyHp = object.enemyHp - (playerAttack - object.enemyDef );
+                console.log("Player attacked the " + object.name + " for " + (playerAttack - object.enemyDef ) +" dmg" );
+                console.log(object.name + ": " + object.enemyHp);
+
+                if (object.enemyHp <= 0){
+                    console.log("Player Killed " + object.name )
+                    object.type = "corpse";
+                    object.name = object.name + " corpse";
+
+                    player.xp = player.xp + enemy.enemyXp;
+                    
+                    let newLevel = player.levelScale.filter(level => {
+                        if(player.xp < level.xpRequired){
+                            return level
+                        } 
+                    })[0];
+                    console.log(newLevel)
+                    if (newLevel.level > player.level){
+                        console.log("Player leveled up");
+                        player.level    = newLevel.level;
+                        player.hp       = newLevel.baseHp;
+                        player.baseAtk  = newLevel.baseAtk;
+                        player.baseDef  = newLevel.baseDef;
+                    }
+
+                }
+            }
+            return object;
+        });
+    
+        this.setState({player: player});
+        this.setState({objectStore: originalObjectStore});
+
+    }
+
 
     _getObjectNeighors(playerRow, playerColumn){
         let neighbors = {};
         this.state.objectStore.forEach(object => {
-            if((object.row === (playerRow +1) ) && (object.column === playerColumn) ){
-                //console.log(object);
+            if((object.row === (playerRow +1) ) && (object.column === playerColumn)
+             && (object.type !== "player") ){
                 neighbors.south = object || {};
-            }else if((object.row === (playerRow -1) ) && (object.column === playerColumn) ){
+            }else if((object.row === (playerRow -1) ) && (object.column === playerColumn)
+            && (object.type !== "player") ){
                 neighbors.north = object || {};
-                
-            }else if((object.row === playerRow   ) && (object.column === (playerColumn +1)) ){
+            }else if((object.row === playerRow   ) && (object.column === (playerColumn +1))
+            && (object.type !== "player") ){
                 neighbors.east = object || {};
-            }else if((object.row === playerRow   ) && (object.column === (playerColumn -1)) ){
+            }else if((object.row === playerRow   ) && (object.column === (playerColumn -1))
+            && (object.type !== "player") ){
                 neighbors.west = object || {};
-                //neighborArray.push({"west":object});
             }
         });
-        //console.log("Neihbor Array");
-        //console.log(neighborArray);
+
         return neighbors;
     }
+
 
     _generateMap(){
         let mapArray =  this.state.gameBoard.map(tile => tile);
@@ -350,6 +412,7 @@ class GameOfLifeComponent extends React.Component {
         //console.log(blockArray);
         this.setState({gameBoard: mapArray});
     }
+
 
     _generateRandomRooms(roomsCount){
         let currentGameBoard =  this.state.gameBoard.map(tile => tile);
@@ -453,7 +516,7 @@ class GameOfLifeComponent extends React.Component {
         }
         let enemyCounter = this.state.enemySettings.maxEnemyCount;
         let player = {
-            tile: Object.assign({}, this.state.tiles.player),
+            tile: Object.assign({}, this.state.player),
             counter: 1
         }
 
@@ -468,12 +531,11 @@ class GameOfLifeComponent extends React.Component {
 
             let chanceOfEnemy = this.state.enemySettings.chance;
             let enemyLevel  = Math.ceil(100 * Math.random()) - (100 - chanceOfEnemy);
-
+            
             if(tile.name == "floor"){
                 if ((treasureQuality <= 0) || (treasureCounter <= 0) ) {
-                    
-
                     if ((enemyLevel > 0) && (enemyCounter > 0)) {
+                    //console.log("enemy level: "+  enemyLevel);
                     //no treasure
                         let creatureTile = Object.assign({},this.state.enemys.goblin );
                         newTile = creatureTile;
@@ -482,7 +544,8 @@ class GameOfLifeComponent extends React.Component {
                             newTile.enemyXp         = enemyLevel * this.state.enemys.goblin.baseXp;
                             newTile.enemyDef        = enemyLevel * this.state.enemys.goblin.baseDef;
                             newTile.enemyAtk        = enemyLevel * this.state.enemys.goblin.baseAtk;
-                        enemyCounter--
+                            
+                        enemyCounter--;
                     }else if( (boss.counter > 0)&&( Math.random() > 0.98 )){
                         let creatureTile = boss.tile;
                         newTile = creatureTile;
@@ -500,8 +563,8 @@ class GameOfLifeComponent extends React.Component {
                                 ((player.counter > 0)&&
                                     ( originalTile.row == (this.state.rows - 2) ))) 
                         {
-                        let creatureTile = player.tile;
-                        newTile = creatureTile;
+                        let playerTile = player.tile;
+                        newTile = playerTile;
                         player.counter--;
 
                         this.state.player.row       = originalTile.row;
@@ -538,7 +601,7 @@ class GameOfLifeComponent extends React.Component {
             }
          )
 
-        console.log(objectStore);
+        //console.log(objectStore);
         this.state.objectStore = objectStore;
 
         console.log("Board Set");
@@ -602,6 +665,7 @@ class ItemTile extends React.Component{
     }
 
     _getCircleStyle(){
+        /*
         if (this.props.tileName === "goblin"){
             return "goblin"
         }else if (this.props.tileName === "demon"){
@@ -610,10 +674,10 @@ class ItemTile extends React.Component{
             return "treasure"
         }else if (this.props.tileName === "player"){
             return "player"
-        }else{
+        }else(this.props.tileName === "corpse"){
             console.log(this.props.tileName)
         }
-
+        */
     }
 
     render(){
@@ -625,7 +689,7 @@ class ItemTile extends React.Component{
                     height={this.props.tileHeight} 
                     width={this.props.tileWidth} 
                     stroke="white"
-                    className={this._getCircleStyle() +
+                    className={this.props.tileName +
                      " column " + this.props.column +
                      " row "    + this.props.row
                     
