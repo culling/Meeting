@@ -197,10 +197,7 @@ class GameOfLifeComponent extends React.Component {
 
                                     
                                     {this.state.objectStore.map((tile, i) => 
-                                        {if( (tile.name !== "floor") &&
-                                             (tile.name !== "wall")  &&
-                                             (tile.name !== "door")
-                                             )
+                                        {
                                         return <ItemTile 
                                             key={i}
                                             tileHeight = {this.state.tileHeight}
@@ -226,34 +223,47 @@ class GameOfLifeComponent extends React.Component {
 
     _keyboardEvents(event){
         console.log("Event");
-        //console.log(event);
+
+
+        let originalObjectStore =  this.state.objectStore.map(object => object) ;
+        let originalPlayer = originalObjectStore.filter(object => 
+            {if(object.type === "player"){
+                return object
+            }}
+        )
+        let player = Object.assign({}, originalPlayer[0]);
+
         if(event.key== "ArrowUp"){
             console.log("Arrow Up");
-
-
-            let player = Object.assign({},  this.state.player);
-
-            originalObjectStore =  Object.assign({},  this.state.objectStore);
-            originalObjectStore[(player.row * this.state.columns) + player.column  ] = oldPlayerTile;
-
-            /*let originalGameBoard = this.state.gameBoard.map(tile => tile);
-            let originalPlayerTile = originalGameBoard[(player.row * this.state.columns) + player.column]
-            console.log(player);
-            console.log(originalPlayerTile);
-
-            let floorTile = Object.assign({}, this.state.tiles.enemy );
-            let oldPlayerTile           = floorTile;
-                oldPlayerTile.row       = originalPlayerTile.row;
-                oldPlayerTile.column    = originalPlayerTile.column;
-            originalGameBoard[(player.row * this.state.columns) + player.column  ] = oldPlayerTile;
-
-            //player.row++;
-
-            //this.setState({player: player});
-            this.setState({gameBoard: originalGameBoard});
-            */
+            player.row--;
         }
-    this.forceUpdate();
+
+        if(event.key== "ArrowDown"){
+            console.log("Arrow Down");
+            player.row++;
+        }
+
+        if(event.key== "ArrowRight"){
+            console.log("Arrow Right");
+            player.column++;
+        }
+
+        if(event.key== "ArrowLeft"){
+            console.log("Arrow Left");
+            player.column--;
+        }
+
+        let newObjectStore = originalObjectStore.map(object => {
+            {if(object.type === "player"){
+                object = player
+            }}
+            return object;
+        });
+
+        //console.log(newObjectStore)
+        this.setState({objectStore: newObjectStore});
+
+//    this.forceUpdate();
     }
 
 
@@ -387,9 +397,7 @@ class GameOfLifeComponent extends React.Component {
 
 
         //let currentGameBoardWithTreasure = currentGameBoard.map( tile => {
-        //let objectStore = currentGameBoard.map( tile => {
-        //let objectStore = [];
-        let objectStore = currentGameBoard.reduce((currentResults, tile) => {
+        let objectStoreUnfiltered = currentGameBoard.map( tile => {
             let newTile             = Object.assign({}, tile);
             let originalTile        = Object.assign({}, tile);    
 
@@ -449,16 +457,24 @@ class GameOfLifeComponent extends React.Component {
                 }
                 newTile.row             = originalTile.row;
                 newTile.column          = originalTile.column;
-                console.log(currentResults);
+                //console.log(currentResults);
                 //currentResults.push(newTile);
-                return newTile;
+                //return newTile;
             }
-            /*
+            
             newTile.row             = originalTile.row;
             newTile.column          = originalTile.column;
             return newTile;
-            */
-        },[]);
+            
+        });
+
+         let objectStore = objectStoreUnfiltered.filter(tile => 
+             {if(tile.type !== "structure"){
+                return tile;
+             }
+             
+            }
+         )
 
         console.log(objectStore);
         this.state.objectStore = objectStore;
