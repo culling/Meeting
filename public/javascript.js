@@ -224,7 +224,7 @@ class GameOfLifeComponent extends React.Component {
     _keyboardEvents(event){
         console.log("Event");
 
-
+        let gameBoard           =  this.state.gameBoard.map(tile => tile);
         let originalObjectStore =  this.state.objectStore.map(object => object) ;
         let originalPlayer = originalObjectStore.filter(object => 
             {if(object.type === "player"){
@@ -233,25 +233,68 @@ class GameOfLifeComponent extends React.Component {
         )
         let player = Object.assign({}, originalPlayer[0]);
 
+        let tileNeighbors = {
+            currentTile : gameBoard[ ( player.row     * this.state.columns  ) + player.column ],
+            northTile   : gameBoard[ ( (player.row-1) * this.state.columns  ) + player.column ],
+            southTile   : gameBoard[ ( (player.row+1) * this.state.columns  ) + player.column ],
+            westTile    : gameBoard[ ( (player.row  ) * this.state.columns  ) + player.column -1 ],
+            eastTile    : gameBoard[ ( (player.row  ) * this.state.columns  ) + player.column +1 ]
+        }
+
+        let playerObjectNeighbors = this._getObjectNeighors(player.row, player.column) ;
+
+        
         if(event.key== "ArrowUp"){
-            console.log("Arrow Up");
-            player.row--;
+            //console.log("Arrow Up");
+            if((tileNeighbors.northTile.name == "floor" )|| (tileNeighbors.northTile.name == "door" ) ){
+                //let playerObjectNeighbors = this._getObjectNeighors(player.row -1, player.column) ;
+                if((playerObjectNeighbors.north != undefined) && (playerObjectNeighbors.north.type == "enemy")){
+                    console.log("Attacked the "+ playerObjectNeighbors.north.name );
+                    //console.log(playerObjectNeighbors);
+                }else{
+                    player.row--;
+                }
+            }
         }
 
         if(event.key== "ArrowDown"){
-            console.log("Arrow Down");
-            player.row++;
+            //console.log("Arrow Down");
+            if((tileNeighbors.southTile.name == "floor" )|| (tileNeighbors.southTile.name == "door" ) ){
+                if((playerObjectNeighbors.south != undefined) && (playerObjectNeighbors.south.type == "enemy")){
+                    console.log("Attacked the "+ playerObjectNeighbors.south.name );
+                    //console.log(playerObjectNeighbors);
+                }else{
+                    player.row++;
+                }
+            }
         }
 
         if(event.key== "ArrowRight"){
-            console.log("Arrow Right");
-            player.column++;
+            //console.log("Arrow Right");
+            if((tileNeighbors.eastTile.name == "floor" )|| (tileNeighbors.eastTile.name == "door" ) ){
+                if((playerObjectNeighbors.east != undefined) && (playerObjectNeighbors.east.type == "enemy")){
+                    console.log("Attacked the "+ playerObjectNeighbors.east.name );
+                }else{
+                    player.column++;
+                }
+            }
         }
 
         if(event.key== "ArrowLeft"){
-            console.log("Arrow Left");
-            player.column--;
+            //console.log("Arrow Left");
+            if((tileNeighbors.westTile.name == "floor" )|| (tileNeighbors.westTile.name == "door" ) ){
+                if((playerObjectNeighbors.west != undefined) && (playerObjectNeighbors.west.type == "enemy")){
+                    console.log("Attacked the "+ playerObjectNeighbors.west.name );
+                }else{
+                    player.column--;
+                }
+            }
         }
+
+
+        playerObjectNeighbors = this._getObjectNeighors(player.row, player.column) ;
+        //console.log("North");
+        console.log(playerObjectNeighbors);
 
         let newObjectStore = originalObjectStore.map(object => {
             {if(object.type === "player"){
@@ -266,7 +309,26 @@ class GameOfLifeComponent extends React.Component {
 //    this.forceUpdate();
     }
 
-
+    _getObjectNeighors(playerRow, playerColumn){
+        let neighbors = {};
+        this.state.objectStore.forEach(object => {
+            if((object.row === (playerRow +1) ) && (object.column === playerColumn) ){
+                //console.log(object);
+                neighbors.south = object || {};
+            }else if((object.row === (playerRow -1) ) && (object.column === playerColumn) ){
+                neighbors.north = object || {};
+                
+            }else if((object.row === playerRow   ) && (object.column === (playerColumn +1)) ){
+                neighbors.east = object || {};
+            }else if((object.row === playerRow   ) && (object.column === (playerColumn -1)) ){
+                neighbors.west = object || {};
+                //neighborArray.push({"west":object});
+            }
+        });
+        //console.log("Neihbor Array");
+        //console.log(neighborArray);
+        return neighbors;
+    }
 
     _generateMap(){
         let mapArray =  this.state.gameBoard.map(tile => tile);
