@@ -2,6 +2,7 @@ class GameOfLifeComponent extends React.Component {
     constructor(){
         super();
         this.state = ({
+            messageLog: "",
             rows: 20,
             tileHeight: 20,
             columns: 20,
@@ -178,6 +179,11 @@ class GameOfLifeComponent extends React.Component {
                             <div className="col-md-6">
 
                             <button onClick={() => this._showState() }>show state</button>
+                            <div className="message-log">
+                                <b>Message Log</b>
+                                {/*this.state.messageLog*/}
+                            </div>
+
 
                             </div>
                             <div className="col-md-6">
@@ -224,7 +230,6 @@ class GameOfLifeComponent extends React.Component {
     };
 
     _keyboardEvents(event){
-        console.log("Event");
 
         let gameBoard           =  this.state.gameBoard.map(tile => tile);
         let originalObjectStore =  this.state.objectStore.map(object => object) ;
@@ -245,7 +250,8 @@ class GameOfLifeComponent extends React.Component {
 
         let playerObjectNeighbors = this._getObjectNeighors(player.row, player.column) ;
 
-        
+
+
         if(event.key== "ArrowUp"){
             //console.log("Arrow Up");
             if((tileNeighbors.northTile.name == "floor" )|| (tileNeighbors.northTile.name == "door" ) ){
@@ -298,9 +304,35 @@ class GameOfLifeComponent extends React.Component {
         }
 
 
+
+        let currentTreasure = this.state.objectStore.filter( object => {
+                if ((object.row === player.row  ) && (object.column === player.column) && object.type === "item" ){
+                    return object;
+                }
+            })[0];
+        
+        if (currentTreasure ){
+            let weaponsArray = this.state.weapons.map(weapon => weapon);
+            console.log("Player found ");
+            console.log(currentTreasure);
+
+            if ((currentTreasure.treasureQuality) > weaponsArray.length -1 ){
+                currentTreasure.treasureQuality = weaponsArray.length -1
+            } 
+            let weaponFound = weaponsArray[(currentTreasure.treasureQuality -1)];
+            if (weaponFound.dmg > player.weapon.dmg){
+                player.weapon = weaponFound;
+                console.log("Player equipped " + weaponFound.name);
+            }
+        }
+
+
         playerObjectNeighbors = this._getObjectNeighors(player.row, player.column) ;
         //console.log("North");
         console.log(playerObjectNeighbors);
+
+
+
 
         let newObjectStore = originalObjectStore.map(object => {
             {if(object.type === "player"){
@@ -308,6 +340,7 @@ class GameOfLifeComponent extends React.Component {
             }}
             return object;
         });
+
         //console.log(newObjectStore)
         this.setState({objectStore: newObjectStore});
     //    this.forceUpdate();
@@ -323,47 +356,55 @@ class GameOfLifeComponent extends React.Component {
             }}
         )
         let player = Object.assign({}, originalPlayer[0]);
-        //console.log(player);
-        //console.log(enemy);
-        
-        //This attack
+        let message = "";
+
         let playerAttack = (Math.round((Math.random() * (player.baseAtk + player.weapon.dmg) ) ) + player.level );
         let enemyAttack  = Math.round((Math.random() * enemy.Atk )* enemy.level);
-        console.log((Math.random() * (player.baseAtk + player.weapon.dmg ) ) );
+        //console.log((Math.random() * (player.baseAtk + player.weapon.dmg ) ) );
 
 
         originalObjectStore.map(object => {
             if((object.row === (enemy.row) ) && (object.column === enemy.column)){
+
+                let damage = (playerAttack - object.enemyDef );
+                if (damage > 0 ){
                 object.enemyHp = object.enemyHp - (playerAttack - object.enemyDef );
                 console.log("Player attacked the " + object.name + " for " + (playerAttack - object.enemyDef ) +" dmg" );
+                message.concat("Player attacked the " + object.name + " for " + (playerAttack - object.enemyDef ) +" dmg" );
+                
                 console.log(object.name + ": " + object.enemyHp);
 
-                if (object.enemyHp <= 0){
-                    console.log("Player Killed " + object.name )
-                    object.type = "corpse";
-                    object.name = object.name + " corpse";
+                    if (object.enemyHp <= 0){
+                        console.log("Player Killed " + object.name )
+                        
+                        object.type = "corpse";
+                        object.name = object.name + " corpse";
 
-                    player.xp = player.xp + enemy.enemyXp;
-                    
-                    let newLevel = player.levelScale.filter(level => {
-                        if(player.xp < level.xpRequired){
-                            return level
-                        } 
-                    })[0];
-                    console.log(newLevel)
-                    if (newLevel.level > player.level){
-                        console.log("Player leveled up");
-                        player.level    = newLevel.level;
-                        player.hp       = newLevel.baseHp;
-                        player.baseAtk  = newLevel.baseAtk;
-                        player.baseDef  = newLevel.baseDef;
+                        player.xp = player.xp + enemy.enemyXp;
+                        
+                        let newLevel = player.levelScale.filter(level => {
+                            if(player.xp < level.xpRequired){
+                                return level
+                            } 
+                        })[0];
+                        console.log(newLevel)
+                        if (newLevel.level > player.level){
+                            console.log("Player leveled up");
+                            player.level    = newLevel.level;
+                            player.hp       = newLevel.baseHp;
+                            player.baseAtk  = newLevel.baseAtk;
+                            player.baseDef  = newLevel.baseDef;
+                        }
+                    } else{
+                        message.concat("Player attacked the " + object.name + " for 0 dmg" );
+
                     }
-
                 }
             }
             return object;
         });
     
+        this.setState({messageLog: (this.state.messageLog.concat(message))});
         this.setState({player: player});
         this.setState({objectStore: originalObjectStore});
 
