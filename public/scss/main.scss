@@ -17,7 +17,7 @@ rect.treasure{
 }
 
 circle.treasure{
-    fill:gold;
+    fill: gold;
 }
 circle.goblin{
     fill:green;
@@ -29,5 +29,11 @@ circle.player{
     fill: blue;
 }
 circle.corpse{
+    fill: darkgrey;
+}
+circle.health{
+    fill: rgb(250, 170, 0)
+}
+circle.empty-box{
     fill: darkgrey;
 }

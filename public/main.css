@@ -27,3 +27,9 @@ circle.player {
 
 circle.corpse {
   fill: darkgrey; }
+
+circle.health {
+  fill: #faaa00; }
+
+circle.empty-box {
+  fill: darkgrey; }

@@ -24,12 +24,14 @@ class GameOfLifeComponent extends React.Component {
             },
             treasureSettings:{
                 chance: 5,
-                treasureCount: 10
+                treasureCount: 10,
+                healthCount:   10
             },
             enemySettings:{
                 chance: 5,
                 treasureCount: 10,
-                maxEnemyCount: 9
+                maxEnemyCount: 9,
+                bossMinLevel: 5
             },
             enemys:{
                 goblin:{
@@ -57,7 +59,7 @@ class GameOfLifeComponent extends React.Component {
                 baseHp: 120,
                 baseAtk: 10,
                 baseDef: 10,
-                hp:     120,
+                hp:     60,
                 weapon: {
                     name:   "Stick",
                     dmg:    2,
@@ -129,6 +131,13 @@ class GameOfLifeComponent extends React.Component {
                 treasure:{
                     type: "item",                    
                     name: "treasure",
+                    space: "open",
+                    health: 1,
+                    destructable: true
+                },
+                health:{
+                    type: "item",                    
+                    name: "health",
                     space: "open",
                     health: 1,
                     destructable: true
@@ -311,28 +320,50 @@ class GameOfLifeComponent extends React.Component {
                 }
             })[0];
         
-        if (currentTreasure ){
-            let weaponsArray = this.state.weapons.map(weapon => weapon);
-            console.log("Player found ");
-            console.log(currentTreasure);
+        if (currentTreasure){
+                console.log("Player found ");
+                console.log(currentTreasure);
+            if (currentTreasure.name == "treasure"){
+                let weaponsArray = this.state.weapons.map(weapon => weapon);
 
-            if ((currentTreasure.treasureQuality) > weaponsArray.length -1 ){
-                currentTreasure.treasureQuality = weaponsArray.length -1
-            } 
-            let weaponFound = weaponsArray[(currentTreasure.treasureQuality -1)];
-            if (weaponFound.dmg > player.weapon.dmg){
-                player.weapon = weaponFound;
-                console.log("Player equipped " + weaponFound.name);
+
+                if ((currentTreasure.treasureQuality) > weaponsArray.length -1 ){
+                    currentTreasure.treasureQuality = weaponsArray.length -1
+                } 
+                let weaponFound = weaponsArray[(currentTreasure.treasureQuality -1)];
+                if (weaponFound.dmg > player.weapon.dmg){
+                    player.weapon = weaponFound;
+                    console.log("Player equipped " + weaponFound.name);
+                }
+            }else if(currentTreasure.name == "health"){
+                console.log("Heath Restored");
+                console.log(player.baseHp);
+                player.hp = player.baseHp;
+                console.log(player.hp);
             }
+            currentTreasure.type = "empty box";
+            currentTreasure.name = "empty box";
         }
 
-
+        
         playerObjectNeighbors = this._getObjectNeighors(player.row, player.column) ;
         //console.log("North");
         console.log(playerObjectNeighbors);
 
+        if (playerObjectNeighbors.north){
+            this._attackPlayer(playerObjectNeighbors.north, player);
+        }
+        if(playerObjectNeighbors.south){
+            this._attackPlayer(playerObjectNeighbors.south, player);
+        }
+        if(playerObjectNeighbors.east){
+            this._attackPlayer(playerObjectNeighbors.east, player);
+        }
+        if(playerObjectNeighbors.west){
+            this._attackPlayer(playerObjectNeighbors.west, player);
+        }
 
-
+        
 
         let newObjectStore = originalObjectStore.map(object => {
             {if(object.type === "player"){
@@ -343,12 +374,46 @@ class GameOfLifeComponent extends React.Component {
 
         //console.log(newObjectStore)
         this.setState({objectStore: newObjectStore});
+        this.setState({player: player});
     //    this.forceUpdate();
     }
 
+    _attackPlayer(enemy, player){
+        if (enemy.type != "enemy"){
+            return
+        }
+
+        //console.log("attacked the player");
+        //console.log(enemy);
+        let originalObjectStore =  this.state.objectStore.map(object => object) ;
+
+        let message = "";
+
+        let enemyAttack  = Math.round((Math.random() * (enemy.baseAtk+ enemy.enemyLevel)) );
+        console.log(enemyAttack);
+        let damage = (enemyAttack  );
+        
+        if (damage > 0 ){
+            player.hp = player.hp - ( damage);
+            console.log(enemy.name + " attacked the " + player.name + " for " + ( damage ) +" dmg" );
+            message.concat(enemy.name + " attacked the " + player.name + " for " + ( damage ) +" dmg" );
+            if (player.hp <= 0){
+                console.log("Player Died");
+                this._playerDied();
+                player.name = "player corpse"
+            }
+        }
+
+        (this.state.messageLog.concat(message));
+        this.setState({player: player});
+    }
+
+    _playerDied(){
+        console.log("Game Over");
+    };
+
 
     _attackEnemy(enemy){
-        //console.log(enemy);
         let originalObjectStore =  this.state.objectStore.map(object => object) ;
         let originalPlayer = originalObjectStore.filter(object => 
             {if(object.type === "player"){
@@ -359,8 +424,6 @@ class GameOfLifeComponent extends React.Component {
         let message = "";
 
         let playerAttack = (Math.round((Math.random() * (player.baseAtk + player.weapon.dmg) ) ) + player.level );
-        let enemyAttack  = Math.round((Math.random() * enemy.Atk )* enemy.level);
-        //console.log((Math.random() * (player.baseAtk + player.weapon.dmg ) ) );
 
 
         originalObjectStore.map(object => {
@@ -368,9 +431,9 @@ class GameOfLifeComponent extends React.Component {
 
                 let damage = (playerAttack - object.enemyDef );
                 if (damage > 0 ){
-                object.enemyHp = object.enemyHp - (playerAttack - object.enemyDef );
-                console.log("Player attacked the " + object.name + " for " + (playerAttack - object.enemyDef ) +" dmg" );
-                message.concat("Player attacked the " + object.name + " for " + (playerAttack - object.enemyDef ) +" dmg" );
+                object.enemyHp = object.enemyHp - (damage );
+                console.log("Player attacked the " + object.name + " for " + (damage ) +" dmg" );
+                message.concat("Player attacked the " + object.name + " for " + (damage ) +" dmg" );
                 
                 console.log(object.name + ": " + object.enemyHp);
 
@@ -407,7 +470,6 @@ class GameOfLifeComponent extends React.Component {
         this.setState({messageLog: (this.state.messageLog.concat(message))});
         this.setState({player: player});
         this.setState({objectStore: originalObjectStore});
-
     }
 
 
@@ -549,7 +611,7 @@ class GameOfLifeComponent extends React.Component {
         //add Objects
         //Add Treasure
         let treasureCounter = this.state.treasureSettings.treasureCount;
-
+        let healthCounter   = this.state.treasureSettings.healthCount;
         //Add Creatures
         let boss = {
             tile: Object.assign({},this.state.enemys.demon ),
@@ -574,7 +636,7 @@ class GameOfLifeComponent extends React.Component {
             let enemyLevel  = Math.ceil(100 * Math.random()) - (100 - chanceOfEnemy);
             
             if(tile.name == "floor"){
-                if ((treasureQuality <= 0) || (treasureCounter <= 0) ) {
+                if ((treasureQuality <= 0) || (treasureCounter <= 0) || healthCounter <= 0 ) {
                     if ((enemyLevel > 0) && (enemyCounter > 0)) {
                     //console.log("enemy level: "+  enemyLevel);
                     //no treasure
@@ -590,11 +652,12 @@ class GameOfLifeComponent extends React.Component {
                     }else if( (boss.counter > 0)&&( Math.random() > 0.98 )){
                         let creatureTile = boss.tile;
                         newTile = creatureTile;
+                            enemyLevel = enemyLevel + this.state.enemySettings.bossMinLevel;
                             newTile.enemyLevel      = enemyLevel;
-                            newTile.enemyHp         = enemyLevel * this.state.enemys.goblin.baseHp;
-                            newTile.enemyXp         = enemyLevel * this.state.enemys.goblin.baseXp;
-                            newTile.enemyDef        = enemyLevel * this.state.enemys.goblin.baseDef;
-                            newTile.enemyAtk        = enemyLevel * this.state.enemys.goblin.baseAtk;
+                            newTile.enemyHp         = enemyLevel * this.state.enemys.demon.baseHp;
+                            newTile.enemyXp         = enemyLevel * this.state.enemys.demon.baseXp;
+                            newTile.enemyDef        = enemyLevel * this.state.enemys.demon.baseDef;
+                            newTile.enemyAtk        = enemyLevel * this.state.enemys.demon.baseAtk;
                         boss.counter--;
                     }else if ( 
                                 ( (player.counter > 0)&&
@@ -616,10 +679,15 @@ class GameOfLifeComponent extends React.Component {
 
 
                 }else {
-                //let originalTile    = Object.assign({}, tile);    
-                    newTile                 = Object.assign({},this.state.tiles.treasure);
-                    newTile.treasureQuality = treasureQuality;
-                    treasureCounter--
+                    if (Math.random() >= 0.5){
+                        newTile                 = Object.assign({},this.state.tiles.treasure);
+                        newTile.treasureQuality = treasureQuality;
+                        treasureCounter--;
+                    }else{
+                        newTile                 = Object.assign({},this.state.tiles.health);
+                        //newTile.treasureQuality = treasureQuality;
+                        healthCounter--;
+                    }
                 }
                 newTile.row             = originalTile.row;
                 newTile.column          = originalTile.column;
@@ -652,7 +720,7 @@ class GameOfLifeComponent extends React.Component {
 
 
     _showState(){
-        console.log(this.state)
+        console.log(this.state.player)
     }
 
     _getTile(column, row){
@@ -705,21 +773,7 @@ class ItemTile extends React.Component{
         super();
     }
 
-    _getCircleStyle(){
-        /*
-        if (this.props.tileName === "goblin"){
-            return "goblin"
-        }else if (this.props.tileName === "demon"){
-            return "demon"
-        }else if (this.props.tileName === "treasure"){
-            return "treasure"
-        }else if (this.props.tileName === "player"){
-            return "player"
-        }else(this.props.tileName === "corpse"){
-            console.log(this.props.tileName)
-        }
-        */
-    }
+
 
     render(){
         return(
