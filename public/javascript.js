@@ -184,7 +184,8 @@ class GameOfLifeComponent extends React.Component {
                     destructable: true,
                     visible: true                                        
                 }
-            }
+            },
+            gameState:"playing"
 
 
         });
@@ -202,7 +203,7 @@ class GameOfLifeComponent extends React.Component {
 
     componentDidMount(){
         this._generateRandomRooms( this.state.roomSettings.roomsCount );
-        console.log(this.state.player);    
+        
         document.addEventListener('keydown', this._keyboardEvents.bind(this));
         
     }
@@ -226,39 +227,16 @@ class GameOfLifeComponent extends React.Component {
 
                             </div>
                             <div className="col-md-6">
-
-                            <svg    
+                                <GameBoardFunc 
+                                    tileWidth = {this.state.tileWidth}
+                                    tileHeight = {this.state.tileHeight}
                                     width={this.state.tileWidth * this.state.columns}
                                     height={this.state.tileHeight * this.state.rows}  
                                     style={this.state.viewPortCSS}
-                                    >
-                                    {this.state.gameBoard.map((tile, i) => <Tile 
-                                            key={i}
-                                            tileHeight = {this.state.tileHeight}
-                                            tileWidth  = {this.state.tileWidth}
-                                            row        = {tile.row}
-                                            column     = {tile.column}
-                                            tileName   = {tile.name}
-                                            visible    = {tile.visible}
-                                    />)}
-
-                                    
-                                    {this.state.objectStore.map((tile, i) => 
-                                        {
-                                        return <ItemTile 
-                                            key={i}
-                                            tileHeight = {this.state.tileHeight}
-                                            tileWidth  = {this.state.tileWidth}
-                                            row        = {tile.row}
-                                            column     = {tile.column}
-                                            tileName   = {tile.name}
-                                            tile       = {tile}
-                                            visible    = {tile.visible}
-                                    />
-                                    }
-                                    )}
-
-                            </svg>
+                                    objectStore = {this.state.objectStore}
+                                    gameBoard = {this.state.gameBoard}
+                                    gameState = {this.state.gameState}
+                                />
                             </div>
                         </div>
                     </div>
@@ -269,6 +247,10 @@ class GameOfLifeComponent extends React.Component {
     };
 
     _keyboardEvents(event){
+
+        if (this.state.gameState == "lost"){
+            return;
+        }
 
         let gameBoard           =  this.state.gameBoard.map(tile => tile);
         let originalObjectStore =  this.state.objectStore.map(object => object) ;
@@ -440,20 +422,20 @@ class GameOfLifeComponent extends React.Component {
                 player.name = "player corpse"
             }
         }
-
     }
 
     _playerDied(){
         console.log("Game Over");
+        this.setState({gameState: "lost"});
     };
 
     _playerWon(){
         console.log("You Won!");
+        this.setState({gameState: "won"});
     }
 
     _attackEnemy(enemy, player){
         let originalObjectStore =  this.state.objectStore.map(object => object) ;
-
         let playerAttack = (Math.round((Math.random() * (player.baseAtk + player.weapon.dmg) ) ) + player.level );
 
 
@@ -465,7 +447,6 @@ class GameOfLifeComponent extends React.Component {
                 object.enemyHp = object.enemyHp - (damage );
                 console.log("Player attacked the " + object.name + " for " + (damage ) +" dmg" );                
                 console.log(object.name + ": " + object.enemyHp);
-
                     if (object.enemyHp <= 0){
                         console.log("Player Killed " + object.name )
                         
@@ -650,10 +631,9 @@ class GameOfLifeComponent extends React.Component {
             counter: 1
         }
         let enemyCounter = this.state.enemySettings.maxEnemyCount;
-        let player = {
-            tile: Object.assign({}, this.state.player),
-            counter: 1
-        }
+        let player = Object.assign({}, this.state.player);
+        let playerCounter = 1;
+        
 
 
         //let currentGameBoardWithTreasure = currentGameBoard.map( tile => {
@@ -693,19 +673,19 @@ class GameOfLifeComponent extends React.Component {
                             newTile.boss            = true;
                         boss.counter--;
                     }else if ( 
-                                ( (player.counter > 0)&&
+                                ( (playerCounter > 0)&&
                                     ( originalTile.row > (this.state.rows / 2)  &&
                                     ( Math.random() > 0.98 ))) 
                             || 
-                                ((player.counter > 0)&&
+                                ((playerCounter > 0)&&
                                     ( originalTile.row == (this.state.rows - 2) ))) 
                         {
-                        let playerTile = player.tile;
-                        newTile = playerTile;
-                        player.counter--;
+                        //let playerTile = player.tile;
+                        newTile = player;
+                        playerCounter--;
 
-                        this.state.player.row       = originalTile.row;
-                        this.state.player.column    = originalTile.column;
+                        player.row       = originalTile.row;
+                        player.column    = originalTile.column;
                     }else{
                         newTile = originalTile;
                     }
@@ -743,8 +723,8 @@ class GameOfLifeComponent extends React.Component {
             }
          )
 
-
-
+         //player = Object.assign({}, this.state.player);
+        //console.log(player);
         let currentGameBoardVisible = currentGameBoard.map(tile =>{
             tile.visible = false;
             for (let i = player.vision;i > (player.vision * -1); i--){
@@ -775,7 +755,7 @@ class GameOfLifeComponent extends React.Component {
         });
         //console.log(objectStore);
         this.state.objectStore = newObjectStore;
-
+        this.setState({player: player});
         console.log("Board Set");
         this.setState({gameBoard: currentGameBoardVisible});
     }
@@ -841,8 +821,16 @@ class ItemTile extends React.Component{
 
     _setClass(){
         let className = (this.props.tileName).concat(this.props.visible?" visible":" hidden") 
-        
         return className 
+    }
+
+    _setRadius(){
+        if ((this.props.tile.type == "enemy") && (this.props.tile.boss == true) ){
+            return ((this.props.tileHeight/ Math.PI ) *2 )
+        }else{
+            return (this.props.tileHeight / Math.PI)
+        }
+
     }
 
     render(){
@@ -850,7 +838,7 @@ class ItemTile extends React.Component{
             
             <circle cx={ (this.props.tileWidth  * this.props.column) + (this.props.tileWidth  / 2) } 
                     cy={ this.props.tileHeight * this.props.row      + (this.props.tileHeight / 2)}
-                    r={this.props.tileHeight / Math.PI}
+                    r= {this._setRadius()}
                     height={this.props.tileHeight} 
                     width={this.props.tileWidth} 
                     stroke="white"                    
@@ -870,6 +858,65 @@ class PlayerStats extends React.Component{
             <p>Player Level: {this.props.player.level}</p>
         </div>)
     }
+}
+
+
+function GameBoardFunc(props){
+    let gameState = props.gameState;
+    if(gameState == "lost"){
+        return (
+        <div>
+            <h1> You Lost </h1>
+        </div>)
+    }else if(gameState == "won"){
+    return(
+            <div>
+            <h1> You Won </h1>
+            <GameBoard game={props} />
+        </div>)
+    }else{
+        return <GameBoard game={props} />
+    }
+
+}
+
+class GameBoard extends React.Component{
+    render(){
+        return(
+                    <svg    
+                    width={this.props.game.width}
+                    height={this.props.game.height}
+                    style={this.props.game.viewPortCSS}
+                    >
+                    {this.props.game.gameBoard.map((tile, i) => <Tile 
+                            key={i}
+                            tileHeight = {this.props.game.tileHeight}
+                            tileWidth  = {this.props.game.tileWidth}
+                            row        = {tile.row}
+                            column     = {tile.column}
+                            tileName   = {tile.name}
+                            visible    = {tile.visible}
+                    />)}
+
+                    
+                    {this.props.game.objectStore.map((tile, i) => 
+                        {
+                        return <ItemTile 
+                            key={i}
+                            tileHeight = {this.props.game.tileHeight}
+                            tileWidth  = {this.props.game.tileWidth}
+                            row        = {tile.row}
+                            column     = {tile.column}
+                            tileName   = {tile.name}
+                            tile       = {tile}
+                            visible    = {tile.visible}
+                    />
+                    }
+                    )}
+            </svg>
+        )
+    }
+
 }
 
 ReactDOM.render (
