@@ -1,35 +1,54 @@
 rect.floor {
+  stroke: white;
   fill: grey; }
 
 rect.enemy {
+  stroke: white;
   fill: red; }
 
 rect.wall {
+  stroke: white;
   fill: #143214; }
 
 rect.door {
+  stroke: white;
   fill: #826400; }
+  rect.door .hidden {
+    stroke: black;
+    fill: black; }
 
-rect.treasure {
-  fill: goldenrod; }
+rect.hidden {
+  stroke: black;
+  fill: black; }
 
 circle.treasure {
+  stroke: white;
   fill: gold; }
 
 circle.goblin {
-  fill: green; }
+  fill: green;
+  stroke: white; }
 
 circle.demon {
-  fill: red; }
+  fill: red;
+  stroke: white; }
 
 circle.player {
-  fill: blue; }
+  fill: blue;
+  stroke: white; }
 
 circle.corpse {
+  stroke: white;
   fill: darkgrey; }
 
 circle.health {
+  stroke: white;
   fill: #faaa00; }
 
 circle.empty-box {
-  fill: darkgrey; }
+  stroke: grey;
+  fill: grey; }
+
+circle.hidden {
+  stroke: black;
+  fill: black; }

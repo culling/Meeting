@@ -60,6 +60,7 @@ class GameOfLifeComponent extends React.Component {
                 baseAtk: 10,
                 baseDef: 10,
                 hp:     60,
+                vision: 2,
                 weapon: {
                     name:   "Stick",
                     dmg:    2,
@@ -86,7 +87,29 @@ class GameOfLifeComponent extends React.Component {
                         baseAtk: 20,
                         baseDef: 20,
                         hp:     320,
+                    },{
+                        level: 4,
+                        xpRequired: 600,
+                        baseHp: 420,
+                        baseAtk: 22,
+                        baseDef: 22,
+                        hp:     340,
+                    },{
+                        level: 5,
+                        xpRequired: 1200,
+                        baseHp: 440,
+                        baseAtk: 24,
+                        baseDef: 24,
+                        hp:     440,
+                    },{
+                        level: 6,
+                        xpRequired: 99999,
+                        baseHp: 450,
+                        baseAtk: 26,
+                        baseDef: 26,
+                        hp:     450,
                     }
+
                     ]
             },
             weapons:[
@@ -112,47 +135,54 @@ class GameOfLifeComponent extends React.Component {
                     name: "wall",
                     space: "solid",
                     health: 9999,
-                    destructable: false
+                    destructable: false,
+                    visible: false
                 },
                 floor: {
                     type: "structure",                    
                     name:  "floor",
                     space: "open",
                     health: 9999,
-                    destructable: false
+                    destructable: false,
+                    visible: false
                 },
                 door:{
                     type: "structure",                    
                     name: "door",
                     space: "open",
                     health: 1,
-                    destructable: true                    
+                    destructable: true,
+                    visible: false                    
                 },
                 treasure:{
                     type: "item",                    
                     name: "treasure",
                     space: "open",
                     health: 1,
-                    destructable: true
+                    destructable: true,
+                    visible: false
                 },
                 health:{
                     type: "item",                    
                     name: "health",
                     space: "open",
                     health: 1,
-                    destructable: true
+                    destructable: true,
+                    visible: false
                 },
                 enemy:{
                     type: "enemy",
                     name: "enemy",
                     space: "solid",
-                    destructable: true                    
+                    destructable: true,
+                    visible: false                    
                 },
                 player:{
                     type: "player",
                     name: "player",
                     space: "solid",
-                    destructable: true                                        
+                    destructable: true,
+                    visible: true                                        
                 }
             }
 
@@ -189,8 +219,8 @@ class GameOfLifeComponent extends React.Component {
 
                             <button onClick={() => this._showState() }>show state</button>
                             <div className="message-log">
-                                <b>Message Log</b>
-                                {/*this.state.messageLog*/}
+
+                                <PlayerStats player={this.state.player} />
                             </div>
 
 
@@ -209,7 +239,7 @@ class GameOfLifeComponent extends React.Component {
                                             row        = {tile.row}
                                             column     = {tile.column}
                                             tileName   = {tile.name}
-
+                                            visible    = {tile.visible}
                                     />)}
 
                                     
@@ -223,10 +253,10 @@ class GameOfLifeComponent extends React.Component {
                                             column     = {tile.column}
                                             tileName   = {tile.name}
                                             tile       = {tile}
+                                            visible    = {tile.visible}
                                     />
                                     }
                                     )}
-
 
                             </svg>
                             </div>
@@ -242,13 +272,7 @@ class GameOfLifeComponent extends React.Component {
 
         let gameBoard           =  this.state.gameBoard.map(tile => tile);
         let originalObjectStore =  this.state.objectStore.map(object => object) ;
-        let originalPlayer = originalObjectStore.filter(object => 
-            {if(object.type === "player"){
-                return object
-            }}
-        )
-        let player = Object.assign({}, originalPlayer[0]);
-
+        let player = Object.assign({}, this.state.player);
         let tileNeighbors = {
             currentTile : gameBoard[ ( player.row     * this.state.columns  ) + player.column ],
             northTile   : gameBoard[ ( (player.row-1) * this.state.columns  ) + player.column ],
@@ -267,8 +291,7 @@ class GameOfLifeComponent extends React.Component {
                 //let playerObjectNeighbors = this._getObjectNeighors(player.row -1, player.column) ;
                 if((playerObjectNeighbors.north != undefined) && (playerObjectNeighbors.north.type == "enemy")){
                     console.log("Attacked the "+ playerObjectNeighbors.north.name );
-                    //console.log(playerObjectNeighbors);
-                    this._attackEnemy(playerObjectNeighbors.north);
+                    this._attackEnemy(playerObjectNeighbors.north, player);
                 }else{
                     player.row--;
                 }
@@ -280,8 +303,7 @@ class GameOfLifeComponent extends React.Component {
             if((tileNeighbors.southTile.name == "floor" )|| (tileNeighbors.southTile.name == "door" ) ){
                 if((playerObjectNeighbors.south != undefined) && (playerObjectNeighbors.south.type == "enemy")){
                     console.log("Attacked the "+ playerObjectNeighbors.south.name );
-                    //console.log(playerObjectNeighbors);
-                    this._attackEnemy(playerObjectNeighbors.south );
+                    this._attackEnemy(playerObjectNeighbors.south, player);
                 }else{
                     player.row++;
                 }
@@ -293,7 +315,7 @@ class GameOfLifeComponent extends React.Component {
             if((tileNeighbors.eastTile.name == "floor" )|| (tileNeighbors.eastTile.name == "door" ) ){
                 if((playerObjectNeighbors.east != undefined) && (playerObjectNeighbors.east.type == "enemy")){
                     console.log("Attacked the "+ playerObjectNeighbors.east.name );
-                    this._attackEnemy(playerObjectNeighbors.east );
+                    this._attackEnemy(playerObjectNeighbors.east, player);
                 }else{
                     player.column++;
                 }
@@ -305,7 +327,7 @@ class GameOfLifeComponent extends React.Component {
             if((tileNeighbors.westTile.name == "floor" )|| (tileNeighbors.westTile.name == "door" ) ){
                 if((playerObjectNeighbors.west != undefined) && (playerObjectNeighbors.west.type == "enemy")){
                     console.log("Attacked the "+ playerObjectNeighbors.west.name );
-                    this._attackEnemy(playerObjectNeighbors.west);
+                    this._attackEnemy(playerObjectNeighbors.west, player);
                 }else{
                     player.column--;
                 }
@@ -330,7 +352,7 @@ class GameOfLifeComponent extends React.Component {
                 if ((currentTreasure.treasureQuality) > weaponsArray.length -1 ){
                     currentTreasure.treasureQuality = weaponsArray.length -1
                 } 
-                let weaponFound = weaponsArray[(currentTreasure.treasureQuality -1)];
+                let weaponFound = weaponsArray[(currentTreasure.treasureQuality)];
                 if (weaponFound.dmg > player.weapon.dmg){
                     player.weapon = weaponFound;
                     console.log("Player equipped " + weaponFound.name);
@@ -341,14 +363,12 @@ class GameOfLifeComponent extends React.Component {
                 player.hp = player.baseHp;
                 console.log(player.hp);
             }
-            currentTreasure.type = "empty box";
-            currentTreasure.name = "empty box";
+            currentTreasure.type = "empty-box";
+            currentTreasure.name = "empty-box";
         }
 
         
         playerObjectNeighbors = this._getObjectNeighors(player.row, player.column) ;
-        //console.log("North");
-        console.log(playerObjectNeighbors);
 
         if (playerObjectNeighbors.north){
             this._attackPlayer(playerObjectNeighbors.north, player);
@@ -363,19 +383,39 @@ class GameOfLifeComponent extends React.Component {
             this._attackPlayer(playerObjectNeighbors.west, player);
         }
 
-        
 
+        let originalGameBoard = this.state.gameBoard.map(tile =>{
+            tile.visible = false;
+            for (let i = player.vision;i > (player.vision * -1); i--){
+            for (let j = player.vision;j > (player.vision * -1); j--){
+
+                if((tile.row == (player.row +i)) && (tile.column == (player.column +j )) ) {
+                    tile.visible = true;
+                }
+            }
+            }
+            return tile
+        } );
+
+        
         let newObjectStore = originalObjectStore.map(object => {
+            object.visible = false;
             {if(object.type === "player"){
                 object = player
             }}
+            for (let i = player.vision;i > (player.vision * -1); i--){
+                for (let j = player.vision;j > (player.vision * -1); j--){
+                    if((object.row == (player.row +i)) && (object.column == (player.column +j )) ) {
+                        object.visible = true;
+                    }
+                }
+            }
             return object;
         });
-
-        //console.log(newObjectStore)
-        this.setState({objectStore: newObjectStore});
-        this.setState({player: player});
-    //    this.forceUpdate();
+        
+    this.setState({gameBoard:   originalGameBoard})
+    this.setState({objectStore: newObjectStore});
+    this.setState({player:      player});
     }
 
     _attackPlayer(enemy, player){
@@ -383,8 +423,6 @@ class GameOfLifeComponent extends React.Component {
             return
         }
 
-        //console.log("attacked the player");
-        //console.log(enemy);
         let originalObjectStore =  this.state.objectStore.map(object => object) ;
 
         let message = "";
@@ -396,7 +434,6 @@ class GameOfLifeComponent extends React.Component {
         if (damage > 0 ){
             player.hp = player.hp - ( damage);
             console.log(enemy.name + " attacked the " + player.name + " for " + ( damage ) +" dmg" );
-            message.concat(enemy.name + " attacked the " + player.name + " for " + ( damage ) +" dmg" );
             if (player.hp <= 0){
                 console.log("Player Died");
                 this._playerDied();
@@ -404,24 +441,18 @@ class GameOfLifeComponent extends React.Component {
             }
         }
 
-        (this.state.messageLog.concat(message));
-        this.setState({player: player});
     }
 
     _playerDied(){
         console.log("Game Over");
     };
 
+    _playerWon(){
+        console.log("You Won!");
+    }
 
-    _attackEnemy(enemy){
+    _attackEnemy(enemy, player){
         let originalObjectStore =  this.state.objectStore.map(object => object) ;
-        let originalPlayer = originalObjectStore.filter(object => 
-            {if(object.type === "player"){
-                return object
-            }}
-        )
-        let player = Object.assign({}, originalPlayer[0]);
-        let message = "";
 
         let playerAttack = (Math.round((Math.random() * (player.baseAtk + player.weapon.dmg) ) ) + player.level );
 
@@ -432,9 +463,7 @@ class GameOfLifeComponent extends React.Component {
                 let damage = (playerAttack - object.enemyDef );
                 if (damage > 0 ){
                 object.enemyHp = object.enemyHp - (damage );
-                console.log("Player attacked the " + object.name + " for " + (damage ) +" dmg" );
-                message.concat("Player attacked the " + object.name + " for " + (damage ) +" dmg" );
-                
+                console.log("Player attacked the " + object.name + " for " + (damage ) +" dmg" );                
                 console.log(object.name + ": " + object.enemyHp);
 
                     if (object.enemyHp <= 0){
@@ -443,10 +472,10 @@ class GameOfLifeComponent extends React.Component {
                         object.type = "corpse";
                         object.name = object.name + " corpse";
 
-                        player.xp = player.xp + enemy.enemyXp;
+                        player.xp = player.xp + (enemy.enemyXp);
                         
                         let newLevel = player.levelScale.filter(level => {
-                            if(player.xp < level.xpRequired){
+                            if(player.xp <= level.xpRequired){
                                 return level
                             } 
                         })[0];
@@ -458,8 +487,11 @@ class GameOfLifeComponent extends React.Component {
                             player.baseAtk  = newLevel.baseAtk;
                             player.baseDef  = newLevel.baseDef;
                         }
+                        if(enemy.boss){
+                            this._playerWon();
+                        }
+
                     } else{
-                        message.concat("Player attacked the " + object.name + " for 0 dmg" );
 
                     }
                 }
@@ -467,9 +499,9 @@ class GameOfLifeComponent extends React.Component {
             return object;
         });
     
-        this.setState({messageLog: (this.state.messageLog.concat(message))});
-        this.setState({player: player});
         this.setState({objectStore: originalObjectStore});
+        this.setState({player: player});
+
     }
 
 
@@ -647,17 +679,18 @@ class GameOfLifeComponent extends React.Component {
                             newTile.enemyXp         = enemyLevel * this.state.enemys.goblin.baseXp;
                             newTile.enemyDef        = enemyLevel * this.state.enemys.goblin.baseDef;
                             newTile.enemyAtk        = enemyLevel * this.state.enemys.goblin.baseAtk;
-                            
+                            newTile.boss            = false;
                         enemyCounter--;
                     }else if( (boss.counter > 0)&&( Math.random() > 0.98 )){
                         let creatureTile = boss.tile;
                         newTile = creatureTile;
-                            enemyLevel = enemyLevel + this.state.enemySettings.bossMinLevel;
+                            enemyLevel = Math.ceil( this.state.enemySettings.bossMinLevel * Math.random()) + this.state.enemySettings.bossMinLevel ;
                             newTile.enemyLevel      = enemyLevel;
-                            newTile.enemyHp         = enemyLevel * this.state.enemys.demon.baseHp;
-                            newTile.enemyXp         = enemyLevel * this.state.enemys.demon.baseXp;
-                            newTile.enemyDef        = enemyLevel * this.state.enemys.demon.baseDef;
-                            newTile.enemyAtk        = enemyLevel * this.state.enemys.demon.baseAtk;
+                            newTile.enemyHp         = enemyLevel * boss.tile.baseHp;
+                            newTile.enemyXp         = enemyLevel * boss.tile.baseXp;
+                            newTile.enemyDef        = enemyLevel * boss.tile.baseDef;
+                            newTile.enemyAtk        = enemyLevel * boss.tile.baseAtk;
+                            newTile.boss            = true;
                         boss.counter--;
                     }else if ( 
                                 ( (player.counter > 0)&&
@@ -710,17 +743,47 @@ class GameOfLifeComponent extends React.Component {
             }
          )
 
+
+
+        let currentGameBoardVisible = currentGameBoard.map(tile =>{
+            tile.visible = false;
+            for (let i = player.vision;i > (player.vision * -1); i--){
+            for (let j = player.vision;j > (player.vision * -1); j--){
+
+                if((tile.row == (player.row +i)) && (tile.column == (player.column +j )) ) {
+                    tile.visible = true;
+                }
+            }
+            }
+            return tile
+        } );
+
+        
+        let newObjectStore = objectStore.map(object => {
+            object.visible = false;
+            {if(object.type === "player"){
+                //object = player
+            }}
+            for (let i = player.vision;i > (player.vision * -1); i--){
+                for (let j = player.vision;j > (player.vision * -1); j--){
+                    if((object.row == (player.row +i)) && (object.column == (player.column +j )) ) {
+                        object.visible = true;
+                    }
+                }
+            }
+            return object;
+        });
         //console.log(objectStore);
-        this.state.objectStore = objectStore;
+        this.state.objectStore = newObjectStore;
 
         console.log("Board Set");
-        this.setState({gameBoard: currentGameBoard});
+        this.setState({gameBoard: currentGameBoardVisible});
     }
 
 
 
     _showState(){
-        console.log(this.state.player)
+        console.log(this.state)
     }
 
     _getTile(column, row){
@@ -740,13 +803,16 @@ class Tile extends React.Component{
         super();
     }
 
+
+
+
     _getRectStyle(){
         if (this.props.tileName === "wall"){
-            return "wall"
+            return "wall ".concat(this.props.visible? "visible":"hidden")
         }else if (this.props.tileName === "door"){
-            return "door"
+            return "door ".concat(this.props.visible? "visible":"hidden")
         } else{
-            return "floor"
+            return "floor ".concat(this.props.visible? "visible":"hidden")
         }
 
     }
@@ -757,7 +823,7 @@ class Tile extends React.Component{
                     y={ this.props.tileHeight * this.props.row} 
                     height={this.props.tileHeight} 
                     width={this.props.tileWidth} 
-                    stroke="white"
+                    
                     className={this._getRectStyle() +
                      " column " + this.props.column +
                      " row "    + this.props.row
@@ -773,7 +839,11 @@ class ItemTile extends React.Component{
         super();
     }
 
-
+    _setClass(){
+        let className = (this.props.tileName).concat(this.props.visible?" visible":" hidden") 
+        
+        return className 
+    }
 
     render(){
         return(
@@ -783,14 +853,22 @@ class ItemTile extends React.Component{
                     r={this.props.tileHeight / Math.PI}
                     height={this.props.tileHeight} 
                     width={this.props.tileWidth} 
-                    stroke="white"
-                    className={this.props.tileName +
-                     " column " + this.props.column +
-                     " row "    + this.props.row
-                    
-                    }
+                    stroke="white"                    
+                    className={ this._setClass() }
                     />
         )
+    }
+}
+
+class PlayerStats extends React.Component{
+    render(){
+        return (<div className="player-stats-container" >
+            <h3> Player Stats </h3>
+            <p>Player Weapon: {this.props.player.weapon.name}</p>
+            <p>Player Health: {this.props.player.hp}</p>
+            <p>Player Xp: {this.props.player.xp}</p>
+            <p>Player Level: {this.props.player.level}</p>
+        </div>)
     }
 }
 

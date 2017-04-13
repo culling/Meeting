@@ -1,39 +1,60 @@
 rect.floor{
+    stroke:white;    
     fill: grey;
 }
 rect.enemy{
+    stroke:white;    
     fill: red;
 }
 rect.wall{
-    fill: rgb(20, 50, 20);
+    stroke:white;
+    fill: rgb(20, 50, 20);  
 }
 
 rect.door{
+    stroke:white;
     fill: rgb(130, 100, 0);
+    .hidden{
+        stroke:black;
+        fill: black;    
+    }
 }
 
-rect.treasure{
-    fill: goldenrod
+rect.hidden{
+    stroke:black;
+    fill: black;
 }
 
 circle.treasure{
+    stroke:white;    
     fill: gold;
 }
 circle.goblin{
     fill:green;
+    stroke:white;
 }
 circle.demon{
     fill: red;
+    stroke:white;
 }
 circle.player{
     fill: blue;
+    stroke:white;
 }
 circle.corpse{
+    stroke:white;
     fill: darkgrey;
 }
 circle.health{
-    fill: rgb(250, 170, 0)
+    stroke:white;
+    fill: rgb(250, 170, 0);
 }
 circle.empty-box{
-    fill: darkgrey;
+    stroke:grey;
+    fill: grey;
+}
+
+circle.hidden{
+    stroke:black;
+    fill: black;
 }
