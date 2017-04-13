@@ -1,4 +1,4 @@
-class GameOfLifeComponent extends React.Component {
+class RougeLikeComponenet extends React.Component {
     constructor(){
         super();
         this.state = ({
@@ -826,7 +826,7 @@ class ItemTile extends React.Component{
 
     _setRadius(){
         if ((this.props.tile.type == "enemy") && (this.props.tile.boss == true) ){
-            return ((this.props.tileHeight/ Math.PI ) *2 )
+            return ((this.props.tileHeight/ Math.PI ) *1.5 )
         }else{
             return (this.props.tileHeight / Math.PI)
         }
@@ -920,5 +920,5 @@ class GameBoard extends React.Component{
 }
 
 ReactDOM.render (
-    <GameOfLifeComponent />, document.getElementById('mount-point')
+    <RougeLikeComponenet />, document.getElementById('mount-point')
 )
