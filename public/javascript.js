@@ -58,10 +58,20 @@ function getJSON(){
         let data = [1,2,3,4];
 
         let h = 100;
-        let w = 400;
+        let w = 800;
         let paddingWidth = 1;
 
-        d3.select("#graph").selectAll("rect")
+        let max = d3.max( (json.data), (data) => (data[1]) );
+        console.log(max);
+
+        let heightModifier = ( h / max) ;
+
+        let graph = d3.select("#graph")
+                      .append("svg")
+                      .attr("width", w )
+                      .attr("height", h);
+                      
+        graph.selectAll("rect")
           .data(json.data)
           .enter()
           .append("rect")
@@ -69,14 +79,22 @@ function getJSON(){
           .attr("x", function(data, i) {
             return i * (w / json.data.length);
             })
-          .attr("y", 0 )
+          .attr("y", (line)=> {
+            return h - (line[1] * heightModifier )
+          } )
+          .attr("height", 100)
+          .attr("width", (w / json.data.length ) -paddingWidth )
+
+
+
+          /*
           .attr("width", function(data, i){
             return ((w / json.data.length) - paddingWidth )
           })
           .attr("height", function(line){
-            return (line[1] /100);
+            return (line[1] * heightModifier );
           } );
-
+          */
 
           
 
