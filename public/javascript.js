@@ -54,65 +54,14 @@ function getJSON(){
               return line[1] +"px";
             } );
         */
-        
-        //let data = [1,2,3,4];
-        //let testData 
-        json.data = [ [1,30],
-                      [2,35],
-                      [3,50],
-                      [4,80]];
 
-        //console.log(test);
+        let data = [1,2,3,4];
 
-        let graphData = json.data
-
-        let h = 200;
-        let w = 600;
+        let h = 100;
+        let w = 400;
         let paddingWidth = 1;
-        let barHeight = "20";
 
-
-        var svg = d3.select("#graph")
-                    .append("svg")
-                    .attr("height", h)
-                    .attr("width",  w)
-                    .attr("style",  "background-color: grey");
-
-            svg.selectAll("rect")
-                    .data(json.data)
-                    .enter()
-                    .append("rect")
-                    .attr("class", "bar")
-                    .attr("x", function(data, i) {
-                      return i * (w / json.data.length);
-                      })
-                    .attr("y", function (line){
-                        return ( h - (line[1]))
-                    }  )
-                    .attr("width", function(data, i){
-                      return ((w / json.data.length) - paddingWidth )
-                    })
-                    .attr("height", function(line){
-                      return( (line[1]) );
-                    });
-          
-          svg.selectAll("text")
-                    .data(json.data)
-                    .enter()
-                    .append("text")
-                    .text("test")
-                    .attr("class", "bar-label")
-                    .attr("x", function(data, i) {
-                      return i * (w / json.data.length);
-                      })
-                    .attr("y", function (line){
-                        return ( h - (line[1]))
-                    })
-
-                    
-
-        /*
-         d3.select("#graph").selectAll("rect")
+        d3.select("#graph").selectAll("rect")
           .data(json.data)
           .enter()
           .append("rect")
@@ -120,28 +69,18 @@ function getJSON(){
           .attr("x", function(data, i) {
             return i * (w / json.data.length);
             })
-          .attr("y", function (line){
-              return ( h - (line[1]/h))
-          }  )
+          .attr("y", 0 )
           .attr("width", function(data, i){
             return ((w / json.data.length) - paddingWidth )
           })
           .attr("height", function(line){
-            return( (line[1]/h) );
+            return (line[1] /100);
           } );
 
 
-        svg.selectAll(".bar")
-          .data(json.data)
-          .enter()
-          .append("text")
-              .attr("x", function(data, i ) { return ((i * (w / json.data.length)) - 3) })
-              .attr("y", function(line){ (h-(line[1]/h)) / 2})
-              .text( "test" );
+          
 
-          //d3.select
 
-          */
 
     } );
 }
