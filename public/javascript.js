@@ -55,16 +55,24 @@ function getJSON(){
             } );
         */
 
-
+        /*
         json.data = [[1,1],
                       [2,3],
                       [3,5],
                       [4,10],
-                      [5,5]]
+                      [5,5]];
+        */
+
+        //select first 10
+        json.data = json.data.filter((line, i ) => { if(i <= 10){return line} } );
+
 
         let h = 400;
         let w = 800;
-        let paddingWidth = 1;
+        let barPaddingWidth = 1;
+        let bottomPaddingHeight = 30;
+        let sidePaddingWidth = 50;
+
 
         let max = d3.max( (json.data), (data) => (data[1]) );
         console.log(max);
@@ -75,17 +83,21 @@ function getJSON(){
                             .domain([0, d3.max(json.data, (data)=>{return data[0]} ) ])
                             .range( [0, w]);
 
-        /*
+
         let yScale = d3.scale.linear()
                             .domain([0, d3.max(json.data, (data)=>{return data[1]} )])
                             .range( [0, h]);
-        */
+
 
         let xAxis = d3.svg.axis();
             xAxis.scale(xScale);
             xAxis.ticks(json.data.length);
             xAxis.orient("bottom");
 
+        let yAxis = d3.svg.axis();
+            yAxis.scale(yScale)
+            yAxis.ticks(5)
+            yAxis.orient("left")
 
 
         let graph = d3.select("#graph")
@@ -101,22 +113,27 @@ function getJSON(){
                       .attr("x", (line, i)  => {
                         return  i * (w / json.data.length) })
                       .attr("y", (line)     => {
-                        console.log((h - (line[1] * heightModifier ) -30 ) )
-                        return (h - (line[1] * heightModifier )) -30 })
+                        console.log((h - (line[1] * heightModifier ) - bottomPaddingHeight ) )
+                        return (h - (line[1] * heightModifier )) - bottomPaddingHeight })
                       .attr("height", (line)=>{
                         return ( (line[1] * heightModifier ) ) })
-                      .attr("width", (w / json.data.length ) -paddingWidth )
+                      .attr("width", (w / json.data.length ) -barPaddingWidth )
 
 
                     graph.append("g")
                         .attr("class", "axis")
-                        .attr("transform", "translate(0, "+ (h - 30) +")")
+                        .attr("transform", "translate(0, "+ (h - bottomPaddingHeight) +")")
                         .call(xAxis);
+
+                    graph.append("g")
+                        .attr("class", "axis")
+                        .attr("transform", "translate(" + sidePaddingWidth + ", 0)" )
+                        .call(yAxis);
 
 
           /*
           .attr("width", function(data, i){
-            return ((w / json.data.length) - paddingWidth )
+            return ((w / json.data.length) - barPaddingWidth )
           })
           .attr("height", function(line){
             return (line[1] * heightModifier );
