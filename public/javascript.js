@@ -65,34 +65,43 @@ function getJSON(){
 
         //select first 10
         json.data = json.data.filter((line, i ) => { if(i <= 10){return line} } );
-
+        console.log(json.data);
 
         let h = 400;
         let w = 800;
         let barPaddingWidth = 1;
-        let bottomPaddingHeight = 30;
-        let sidePaddingWidth = 50;
+        let yPadding = 30;
+        let xPadding = 50;
 
 
         let max = d3.max( (json.data), (data) => (data[1]) );
-        console.log(max);
+        
 
         let heightModifier = ( h / max) ;
 
-        let xScale = d3.scale.linear()
-                            .domain([0, d3.max(json.data, (data)=>{return data[0]} ) ])
+        let formatDate = d3.time.format("%Y-%m-%d");
+        let yearFormat = d3.time.format("%Y");
+
+        let xScale = d3.time.scale()
+                            .domain([   d3.min(json.data, (data)=>{return (formatDate.parse(data[0])) })
+                             ,          d3.max(json.data, (data)=>{return (formatDate.parse(data[0])) }) ])
                             .range( [0, w]);
+
 
 
         let yScale = d3.scale.linear()
                             .domain([0, d3.max(json.data, (data)=>{return data[1]} )])
-                            .range( [0, h]);
+                            .range( [h, 0]);
 
 
         let xAxis = d3.svg.axis();
             xAxis.scale(xScale);
-            xAxis.ticks(json.data.length);
-            xAxis.orient("bottom");
+            //xAxis.ticks(json.data.length);
+            xAxis.ticks(d3.time.year, 1);
+            xAxis.orient("bottom")
+            xAxis.tickFormat(d3.time.format("%Y"));
+            
+            
 
         let yAxis = d3.svg.axis();
             yAxis.scale(yScale)
@@ -111,34 +120,24 @@ function getJSON(){
                       .append("rect")
                       .attr("class", "bar")
                       .attr("x", (line, i)  => {
-                        return  i * (w / json.data.length) })
+                        return  i * ((w - xPadding) / json.data.length) + xPadding  })
                       .attr("y", (line)     => {
-                        console.log((h - (line[1] * heightModifier ) - bottomPaddingHeight ) )
-                        return (h - (line[1] * heightModifier )) - bottomPaddingHeight })
+                        return (h - (line[1] * heightModifier )) - yPadding })
                       .attr("height", (line)=>{
                         return ( (line[1] * heightModifier ) ) })
-                      .attr("width", (w / json.data.length ) -barPaddingWidth )
-
+                      .attr("width", ((w - xPadding)/ json.data.length ) - barPaddingWidth )
+                      
 
                     graph.append("g")
                         .attr("class", "axis")
-                        .attr("transform", "translate(0, "+ (h - bottomPaddingHeight) +")")
+                        .attr("transform", "translate(0, "+ (h - yPadding) +")")
                         .call(xAxis);
 
                     graph.append("g")
                         .attr("class", "axis")
-                        .attr("transform", "translate(" + sidePaddingWidth + ", 0)" )
+                        .attr("transform", "translate(" + xPadding + ", 0)" )
                         .call(yAxis);
 
-
-          /*
-          .attr("width", function(data, i){
-            return ((w / json.data.length) - barPaddingWidth )
-          })
-          .attr("height", function(line){
-            return (line[1] * heightModifier );
-          } );
-          */
 
           
 
@@ -146,13 +145,3 @@ function getJSON(){
 
     } );
 }
-
-
-
-
-
-
-
-
-
-
