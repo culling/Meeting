@@ -85,18 +85,17 @@ function getJSON(){
         let xScale = d3.time.scale()
                             .domain([   d3.min(json.data, (data)=>{return (formatDate.parse(data[0])) })
                              ,          d3.max(json.data, (data)=>{return (formatDate.parse(data[0])) }) ])
-                            .range( [0, w]);
+                            .range( [xPadding , w   ]);
 
 
 
         let yScale = d3.scale.linear()
                             .domain([0, d3.max(json.data, (data)=>{return data[1]} )])
-                            .range( [h, 0]);
+                            .range( [h -xPadding, yPadding ]);
 
 
         let xAxis = d3.svg.axis();
             xAxis.scale(xScale);
-            //xAxis.ticks(json.data.length);
             xAxis.ticks(d3.time.year, 1);
             xAxis.orient("bottom")
             xAxis.tickFormat(d3.time.format("%Y"));
@@ -120,22 +119,22 @@ function getJSON(){
                       .append("rect")
                       .attr("class", "bar")
                       .attr("x", (line, i)  => {
-                        return  i * ((w - xPadding) / json.data.length) + xPadding  })
+                        return  i * ((w - (xPadding)) / json.data.length) + xPadding  })
                       .attr("y", (line)     => {
-                        return (h - (line[1] * heightModifier )) - yPadding })
+                        return (h - (line[1]  )) - yPadding })
                       .attr("height", (line)=>{
-                        return ( (line[1] * heightModifier ) ) })
+                        return ( (line[1]  ) ) })
                       .attr("width", ((w - xPadding)/ json.data.length ) - barPaddingWidth )
                       
 
                     graph.append("g")
                         .attr("class", "axis")
-                        .attr("transform", "translate(0, "+ (h - yPadding) +")")
+                        .attr("transform", "translate(" + (0) + ", "+ (h -yPadding ) +")")
                         .call(xAxis);
 
                     graph.append("g")
                         .attr("class", "axis")
-                        .attr("transform", "translate(" + xPadding + ", 0)" )
+                        .attr("transform", "translate(" +( xPadding )+ ", "+ yPadding +")" )
                         .call(yAxis);
 
 
