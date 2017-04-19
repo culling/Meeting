@@ -8,26 +8,26 @@ https://raw.githubusercontent.com/FreeCodeCamp/ProjectReferenceData/master/GDP-d
 
 
 $('document').ready(function() {
-  let months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    let months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
-/*
-  var url = 'https://raw.githubusercontent.com/FreeCodeCamp/ProjectReferenceData/master/GDP-data.json';
-  var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-  var formatCurrency = d3.format("$,.2f");
-  $.getJSON(url).success(function(jsonData) {
-    var data = jsonData.data;
-  });
-console.log(data);
-*/
+    /*
+      var url = 'https://raw.githubusercontent.com/FreeCodeCamp/ProjectReferenceData/master/GDP-data.json';
+      var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+      var formatCurrency = d3.format("$,.2f");
+      $.getJSON(url).success(function(jsonData) {
+        var data = jsonData.data;
+      });
+    console.log(data);
+    */
 
     console.log("javascript Loaded");
     getJSON();
 
 });
 
-function getJSON(){
+function getJSON() {
     var url = 'https://raw.githubusercontent.com/FreeCodeCamp/ProjectReferenceData/master/GDP-data.json';
-    $.getJSON(url, function(json){
+    $.getJSON(url, function(json) {
         console.log(json);
         let formatCurrency = d3.format("$,.2f");
 
@@ -39,7 +39,7 @@ function getJSON(){
             .append("p")
             .text(function (line){ return line[0]; } );
         */
-            
+
         //.text(function (line){ return line[0]; } )
 
         /*
@@ -64,7 +64,7 @@ function getJSON(){
         */
 
         //select first 10
-        json.data = json.data.filter((line, i ) => { if(i <= 10){return line} } );
+        json.data = json.data.filter((line, i) => { if (i <= 40) { return line } });
         console.log(json.data);
 
         let h = 400;
@@ -74,73 +74,85 @@ function getJSON(){
         let xPadding = 50;
 
 
-        let max = d3.max( (json.data), (data) => (data[1]) );
-        
+        let max = d3.max((json.data), (data) => (data[1]));
 
-        let heightModifier = ( h / max) ;
+
+        let heightModifier = (h / max);
 
         let formatDate = d3.time.format("%Y-%m-%d");
         let yearFormat = d3.time.format("%Y");
 
         let xScale = d3.time.scale()
-                            .domain([   d3.min(json.data, (data)=>{return (formatDate.parse(data[0])) })
-                             ,          d3.max(json.data, (data)=>{return (formatDate.parse(data[0])) }) ])
-                            .range( [xPadding , w   ]);
+            .domain([   d3.min(json.data, (data) => { return (formatDate.parse(data[0])) }),
+                        d3.max(json.data, (data) => { return (formatDate.parse(data[0])) })
+            ])
+            .range([xPadding, w]);
 
 
 
         let yScale = d3.scale.linear()
-                            .domain([0, d3.max(json.data, (data)=>{return data[1]} )])
-                            .range( [h -xPadding, yPadding ]);
+            .domain([   0,
+                        d3.max(json.data, (data) => { return data[1] })])
+            .range([h - yPadding, 0
+            
+            ]);
 
 
         let xAxis = d3.svg.axis();
-            xAxis.scale(xScale);
-            xAxis.ticks(d3.time.year, 1);
-            xAxis.orient("bottom")
-            xAxis.tickFormat(d3.time.format("%Y"));
-            
-            
+        xAxis.scale(xScale);
+        xAxis.ticks(d3.time.year, 1);
+        xAxis.orient("bottom")
+        xAxis.tickFormat(d3.time.format("%Y"));
+
+
 
         let yAxis = d3.svg.axis();
-            yAxis.scale(yScale)
-            yAxis.ticks(5)
-            yAxis.orient("left")
+        yAxis.scale(yScale)
+        yAxis.ticks(5)
+        yAxis.orient("left")
 
 
         let graph = d3.select("#graph")
-                      .append("svg")
-                      .attr("width", w )
-                      .attr("height", h);
+            .append("svg")
+            .attr("width", w)
+            .attr("height", h);
 
-                    graph.selectAll("rect")
-                      .data(json.data)
-                      .enter()
-                      .append("rect")
-                      .attr("class", "bar")
-                      .attr("x", (line, i)  => {
-                        return  i * ((w - (xPadding)) / json.data.length) + xPadding  })
-                      .attr("y", (line)     => {
-                        return (h - (line[1]  )) - yPadding })
-                      .attr("height", (line)=>{
-                        return ( (line[1]  ) ) })
-                      .attr("width", ((w - xPadding)/ json.data.length ) - barPaddingWidth )
-                      
-
-                    graph.append("g")
-                        .attr("class", "axis")
-                        .attr("transform", "translate(" + (0) + ", "+ (h -yPadding ) +")")
-                        .call(xAxis);
-
-                    graph.append("g")
-                        .attr("class", "axis")
-                        .attr("transform", "translate(" +( xPadding )+ ", "+ yPadding +")" )
-                        .call(yAxis);
+        graph.selectAll("rect")
+            .data(json.data)
+            .enter()
+            .append("rect")
+            .attr("class", (line) => {
+                let classString = "bar ".concat(formatDate.parse(line[0]))
+                                        .concat(" ")
+                                        .concat((line[1]))
+                return classString
+            })
+            .attr("x", (line, i) => {
+                return i * ((w - (xPadding)) / json.data.length) + xPadding
+            })
+            .attr("y", (line) => {
+                return (h - (line[1])) 
+            })
+            .attr("height", (line) => {
+                return ((line[1]) - yPadding )
+            })
+            .attr("width", ((w - xPadding) / json.data.length) - barPaddingWidth)
 
 
-          
+        graph.append("g")
+            .attr("class", "axis")
+            .attr("transform", "translate(" + (0) + ", " + (h - yPadding) + ")")
+            .call(xAxis);
+
+        graph.append("g")
+            .attr("class", "axis")
+            .attr("transform", "translate(" + (xPadding) + ", " +0 + ")")
+            .call(yAxis);
 
 
 
-    } );
+
+
+
+    });
 }
