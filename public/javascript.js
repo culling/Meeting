@@ -131,10 +131,10 @@ function getJSON() {
                 return i * ((w - (xPadding)) / json.data.length) + xPadding
             })
             .attr("y", (line) => {
-                return (h - (line[1])) 
+                return yScale(line[1])
             })
             .attr("height", (line) => {
-                return ((line[1]) - yPadding )
+                return (h -yScale(line[1]) -yPadding  )
             })
             .attr("width", ((w - xPadding) / json.data.length) - barPaddingWidth)
 
