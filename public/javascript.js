@@ -136,25 +136,60 @@ function getJSON() {
                 return (h -yScale(line[1]) -yPadding  )
             })
             .attr("width", ((w - xPadding) / json.data.length) - barPaddingWidth)
-            .on("mouseover", function(){
+            .on("mouseover", function(d){
                 //for fill effects 
                 /*d3.select(this)
                     .attr("fill", "orange");
                     console.log("Mouseover found");
                     console.log(d3.select(this));
                 */
+
+                /*
                 d3.select(this)
                     .append("title")
                     .text( (line) => {return line} )
+                */
+
+
+                var xPosition = parseFloat(d3.select(this).attr("x")) ;
+                var yPosition = parseFloat(d3.select(this).attr("y")) + 14;
+
+                d3.select("#tooltip")
+                  .style("left", xPosition + "px")
+                  .style("top", yPosition + "px")
+                  .select("#value")
+                  .text(d[1]);
+
+                d3.select("#tooltip")
+                  .select("#dateValue")
+                  .text(d[0]);
+
+                d3.select("#tooltip").classed("hidden", false);
+
+                /*
+                graph.append("text")
+                    .attr("id", "tooltip")
+                    .attr("x", xPosition)
+                    .attr("y", yPosition)
+                    .attr("text-anchor", "middle")
+                    .attr("font-family", "sans-serif")
+                    .attr("font-size", "11px")
+                    .attr("font-weight", "bold")
+                    .attr("fill", "black")
+                    .text(d);
+                */
             })
-            /*
+
             .on("mouseout", function(){
+              /*
                 d3.select(this)
                     .transition(9000)
                     .delay(500)
-                    .attr("fill", "teal");                
+                    .attr("fill", "teal");
+              */
+                //d3.select("#tooltip").remove();
+                d3.select("#tooltip").classed("hidden", true);
             })
-            */
 
 
 
