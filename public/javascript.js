@@ -125,6 +125,7 @@ function getJSON() {
                                         .concat((line[1]))
                 return classString
             })
+            .attr("fill", "teal")
             .attr("x", (line, i) => {
                 return i * ((w - (xPadding)) / json.data.length) + xPadding
             })
@@ -135,6 +136,26 @@ function getJSON() {
                 return (h -yScale(line[1]) -yPadding  )
             })
             .attr("width", ((w - xPadding) / json.data.length) - barPaddingWidth)
+            .on("mouseover", function(){
+                //for fill effects 
+                /*d3.select(this)
+                    .attr("fill", "orange");
+                    console.log("Mouseover found");
+                    console.log(d3.select(this));
+                */
+                d3.select(this)
+                    .append("title")
+                    .text( (line) => {return line} )
+            })
+            /*
+            .on("mouseout", function(){
+                d3.select(this)
+                    .transition(9000)
+                    .delay(500)
+                    .attr("fill", "teal");                
+            })
+            */
+
 
 
         graph.append("g")

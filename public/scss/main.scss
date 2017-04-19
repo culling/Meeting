@@ -1,8 +1,13 @@
 $defaultFill: teal ;
 
 rect.bar{
-    fill: $defaultFill;
+    /*fill: $defaultFill;*/
+    
+    transition: all 1.9s;
+    
     &:hover{
-        fill: lighten($defaultFill, 5) ;
+        fill: lighten($defaultFill, 10) ;
     }
+    
+   
 }

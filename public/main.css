@@ -1,4 +1,5 @@
 rect.bar {
-  fill: teal; }
+  /*fill: $defaultFill;*/
+  transition: all 1.9s; }
   rect.bar:hover {
-    fill: #009a9a; }
+    fill: #00b3b3; }
