@@ -1,4 +1,8 @@
+$defaultFill: teal ;
 
-.bar{
-    fill: teal;
+rect.bar{
+    fill: $defaultFill;
+    &:hover{
+        fill: lighten($defaultFill, 5) ;
+    }
 }

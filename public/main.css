@@ -1,2 +1,4 @@
-.bar {
+rect.bar {
   fill: teal; }
+  rect.bar:hover {
+    fill: #009a9a; }

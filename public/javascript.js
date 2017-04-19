@@ -64,7 +64,7 @@ function getJSON() {
         */
 
         //select first 10
-        json.data = json.data.filter((line, i) => { if (i <= 40) { return line } });
+        json.data = json.data.filter((line, i) => { if (i <= 20) { return line } });
         console.log(json.data);
 
         let h = 400;
@@ -74,10 +74,8 @@ function getJSON() {
         let xPadding = 50;
 
 
-        let max = d3.max((json.data), (data) => (data[1]));
-
-
-        let heightModifier = (h / max);
+        //let max = d3.max((json.data), (data) => (data[1]));
+        //let heightModifier = (h / max);
 
         let formatDate = d3.time.format("%Y-%m-%d");
         let yearFormat = d3.time.format("%Y");
@@ -148,7 +146,6 @@ function getJSON() {
             .attr("class", "axis")
             .attr("transform", "translate(" + (xPadding) + ", " +0 + ")")
             .call(yAxis);
-
 
 
 
