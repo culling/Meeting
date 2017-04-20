@@ -8,18 +8,6 @@ https://raw.githubusercontent.com/FreeCodeCamp/ProjectReferenceData/master/GDP-d
 
 
 $('document').ready(function() {
-    let months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-
-    /*
-      var url = 'https://raw.githubusercontent.com/FreeCodeCamp/ProjectReferenceData/master/GDP-data.json';
-      var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-      var formatCurrency = d3.format("$,.2f");
-      $.getJSON(url).success(function(jsonData) {
-        var data = jsonData.data;
-      });
-    console.log(data);
-    */
-
     console.log("javascript Loaded");
     getJSON();
 
@@ -64,14 +52,15 @@ function getJSON() {
         */
 
         //select first 10
-        json.data = json.data.filter((line, i) => { if (i <= 20) { return line } });
+        let masterData = json.data.map((line) =>{return line} );
+        //json.data = json.data.filter((line, i) => { if (i <= 20) { return line } });
         console.log(json.data);
 
         let h = 400;
         let w = 800;
-        let barPaddingWidth = 1;
+        let barPaddingWidth = 0;
         let yPadding = 30;
-        let xPadding = 50;
+        let xPadding = 80;
 
 
         //let max = d3.max((json.data), (data) => (data[1]));
@@ -79,6 +68,7 @@ function getJSON() {
 
         let formatDate = d3.time.format("%Y-%m-%d");
         let yearFormat = d3.time.format("%Y");
+        let yearMonthFormat = d3.time.format("%Y %B")
 
         let xScale = d3.time.scale()
             .domain([   d3.min(json.data, (data) => { return (formatDate.parse(data[0])) }),
@@ -91,14 +81,14 @@ function getJSON() {
         let yScale = d3.scale.linear()
             .domain([   0,
                         d3.max(json.data, (data) => { return data[1] })])
-            .range([h - yPadding, 0
+            .range([h - yPadding, 20
             
             ]);
 
 
         let xAxis = d3.svg.axis();
         xAxis.scale(xScale);
-        xAxis.ticks(d3.time.year, 1);
+        xAxis.ticks(d3.time.year, 10);
         xAxis.orient("bottom")
         xAxis.tickFormat(d3.time.format("%Y"));
 
@@ -106,7 +96,7 @@ function getJSON() {
 
         let yAxis = d3.svg.axis();
         yAxis.scale(yScale)
-        yAxis.ticks(5)
+        yAxis.ticks(10)
         yAxis.orient("left")
 
 
@@ -149,10 +139,14 @@ function getJSON() {
                     .append("title")
                     .text( (line) => {return line} )
                 */
+                let thisDate = (formatDate.parse(d[0]));
 
 
-                var xPosition = parseFloat(d3.select(this).attr("x")) ;
-                var yPosition = parseFloat(d3.select(this).attr("y")) + 14;
+                //console.log(this);
+                //var xPosition = parseFloat(d3.select(this).attr("x")) ;
+                var xPosition = parseFloat(d3.event.pageX)
+                //var yPosition = parseFloat(d3.select(this).attr("y")) + 14;
+                var yPosition = parseFloat(d3.event.pageY +14)
 
                 d3.select("#tooltip")
                   .style("left", xPosition + "px")
@@ -162,7 +156,7 @@ function getJSON() {
 
                 d3.select("#tooltip")
                   .select("#dateValue")
-                  .text(d[0]);
+                  .text(yearMonthFormat(thisDate) );
 
                 d3.select("#tooltip").classed("hidden", false);
 
@@ -205,6 +199,10 @@ function getJSON() {
 
 
 
+
+
+
+        //json.data = masterData;
 
 
     });
