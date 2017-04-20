@@ -1,9 +1,6 @@
 //ready to start on D3.JS
-// Visualize Data with a Bar Chart
+// Visualize line with a Bar Chart
 
-/*data from 
-https://raw.githubusercontent.com/FreeCodeCamp/ProjectReferenceData/master/GDP-data.json
-*/
 
 
 
@@ -14,7 +11,8 @@ $('document').ready(function() {
 });
 
 function getJSON() {
-    var url = 'https://raw.githubusercontent.com/FreeCodeCamp/ProjectReferenceData/master/GDP-data.json';
+
+    let url = "https://raw.githubusercontent.com/FreeCodeCamp/ProjectReferenceData/master/cyclist-data.json"
     $.getJSON(url, function(json) {
         console.log(json);
         let formatCurrency = d3.format("$,.2f");
@@ -22,29 +20,29 @@ function getJSON() {
         //d3.select("graph").append("svg");
         /*
         d3.select("#graph").selectAll("p")
-            .data(json.data)
+            .data(json)
             .enter()
             .append("p")
-            .text(function (line){ return line[0]; } );
+            .text(function (line){ return line.Seconds; } );
         */
 
-        //.text(function (line){ return line[0]; } )
+        //.text(function (line){ return line.Seconds; } )
 
         /*
         d3.select("#graph").selectAll("div")
-            .data(json.data)
+            .data(json)
             .enter()
             .append("div")
             .attr("class", "bar")
             .style("height", "30px")
             .style("width", function(line){
               console.log(line);
-              return line[1] +"px";
+              return line.Place +"px";
             } );
         */
 
         /*
-        json.data = [[1,1],
+        json = [[1,1],
                       [2,3],
                       [3,5],
                       [4,10],
@@ -52,9 +50,9 @@ function getJSON() {
         */
 
         //select first 10
-        let masterData = json.data.map((line) =>{return line} );
-        //json.data = json.data.filter((line, i) => { if (i <= 20) { return line } });
-        console.log(json.data);
+        let masterline = json.map((line) =>{return line} );
+        //json = json.filter((line, i) => { if (i <= 20) { return line } });
+        console.log(json);
 
         let h = 400;
         let w = 800;
@@ -63,16 +61,16 @@ function getJSON() {
         let xPadding = 80;
 
 
-        //let max = d3.max((json.data), (data) => (data[1]));
+        //let max = d3.max((json), (line) => (line.Place));
         //let heightModifier = (h / max);
 
         let formatDate = d3.time.format("%Y-%m-%d");
         let yearFormat = d3.time.format("%Y");
         let yearMonthFormat = d3.time.format("%Y %B")
 
-        let xScale = d3.time.scale()
-            .domain([   d3.min(json.data, (data) => { return (formatDate.parse(data[0])) }),
-                        d3.max(json.data, (data) => { return (formatDate.parse(data[0])) })
+        let xScale = d3.scale.linear()
+            .domain([   d3.min(json, (line) => { return line.Seconds/*(formatDate.parse(line.Seconds))*/ }),
+                        d3.max(json, (line) => { return line.Seconds/*(formatDate.parse(line.Seconds))*/ })
             ])
             .range([xPadding, w]);
 
@@ -80,7 +78,7 @@ function getJSON() {
 
         let yScale = d3.scale.linear()
             .domain([   0,
-                        d3.max(json.data, (data) => { return data[1] })])
+                        d3.max(json, (line) => { return line.Place })])
             .range([h - yPadding, 20
             
             ]);
@@ -105,27 +103,30 @@ function getJSON() {
             .attr("width", w)
             .attr("height", h);
 
-        graph.selectAll("rect")
-            .data(json.data)
+        graph.selectAll("circle")
+            .data(json)
             .enter()
-            .append("rect")
+            .append("circle")
             .attr("class", (line) => {
-                let classString = "bar ".concat(formatDate.parse(line[0]))
+                let classString = "bar ".concat((line.Seconds))
                                         .concat(" ")
-                                        .concat((line[1]))
+                                        .concat((line.Place))
                 return classString
             })
             .attr("fill", "teal")
-            .attr("x", (line, i) => {
-                return i * ((w - (xPadding)) / json.data.length) + xPadding
+            .attr("cx", (line, i) => {
+                return xScale(line.Seconds) //i * ((w - (xPadding)) / json.length) + xPadding
             })
-            .attr("y", (line) => {
-                return yScale(line[1])
+            .attr("cy", (line) => {
+                return yScale(line.Place)
             })
+            .attr("r", 5)
+            /*
             .attr("height", (line) => {
-                return (h -yScale(line[1]) -yPadding  )
+                return (h -yScale(line.Place) -yPadding  )
             })
-            .attr("width", ((w - xPadding) / json.data.length) - barPaddingWidth)
+            .attr("width", ((w - xPadding) / json.length) - barPaddingWidth)
+            */
             .on("mouseover", function(d){
                 //for fill effects 
                 /*d3.select(this)
@@ -139,7 +140,7 @@ function getJSON() {
                     .append("title")
                     .text( (line) => {return line} )
                 */
-                let thisDate = (formatDate.parse(d[0]));
+                //let thisDate = (formatDate.parse(d[0]));
 
 
                 //console.log(this);
@@ -152,11 +153,11 @@ function getJSON() {
                   .style("left", xPosition + "px")
                   .style("top", yPosition + "px")
                   .select("#value")
-                  .text(d[1]);
+                  .text(d.Seconds);
 
                 d3.select("#tooltip")
                   .select("#dateValue")
-                  .text(yearMonthFormat(thisDate) );
+                  .text(d.Place );
 
                 d3.select("#tooltip").classed("hidden", false);
 
@@ -202,7 +203,7 @@ function getJSON() {
 
 
 
-        //json.data = masterData;
+        //json = masterline;
 
 
     });
