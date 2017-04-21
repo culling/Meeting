@@ -10,14 +10,15 @@ circle.doped {
   circle.doped:hover {
     fill: crimson; }
 
-html {
+body {
   background-image: url("https://upload.wikimedia.org/wikipedia/commons/7/75/V%C3%A9lodi_Dijon.jpg");
   background-size: cover; }
 
-body {
+.body-container {
   background-color: rgba(255, 255, 255, 0.75); }
 
 #tooltip {
+  z-index: 1;
   position: absolute;
   width: 200px;
   height: auto;
@@ -25,14 +26,12 @@ body {
   background-color: white;
   border-radius: 10px;
   box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
-  transition: opacity 3s ease-in;
   opacity: 1; }
+  #tooltip p {
+    margin: 0;
+    font-family: sans-serif;
+    font-size: 16px;
+    line-height: 20px; }
   #tooltip.hidden {
     opacity: 0;
     transition: opacity 6s ease-out; }
-
-#tooltip p {
-  margin: 0;
-  font-family: sans-serif;
-  font-size: 16px;
-  line-height: 20px; }
