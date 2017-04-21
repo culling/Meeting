@@ -1,11 +1,27 @@
 $defaultFill: teal ;
 
-rect.bar{
-    transition: all 0.4s;
-    &:hover{
-        fill: lighten($defaultFill, 10) ;
+circle {
+    &.clean{
+        $fill: teal ;
+        fill: $fill;
+        transition: all 0.4s;
+            &:hover{
+            fill: lighten($fill, 10) ;
+        }
     }
+
+    &.doped{
+        $fill: darken(crimson, 10) ;
+        fill: $fill;
+        transition: all 0.4s;
+            &:hover{
+            fill: lighten($fill, 10) ;
+        }
+    }
+
 }
+
+
 
 #tooltip {
     position: absolute;

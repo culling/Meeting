@@ -86,9 +86,8 @@ function getJSON() {
 
         let xAxis = d3.svg.axis();
         xAxis.scale(xScale);
-        xAxis.ticks(d3.time.year, 10);
-        xAxis.orient("bottom")
-        xAxis.tickFormat(d3.time.format("%Y"));
+        xAxis.ticks(10);
+        xAxis.orient("bottom");
 
 
 
@@ -108,12 +107,21 @@ function getJSON() {
             .enter()
             .append("circle")
             .attr("class", (line) => {
-                let classString = "bar ".concat((line.Seconds))
-                                        .concat(" ")
-                                        .concat((line.Place))
+                console.log(line.Doping.length);
+                let classString = "";
+                if (line.Doping.length < 1){
+                     classString = "clean ".concat((line.Seconds))
+                                            .concat(" ")
+                                            .concat((line.Place))
+                }else{
+                     classString = "doped ".concat((line.Seconds))
+                                            .concat(" ")
+                                            .concat((line.Place))
+                }
+
                 return classString
             })
-            .attr("fill", "teal")
+            //.attr("fill", "teal")
             .attr("cx", (line, i) => {
                 return xScale(line.Seconds) //i * ((w - (xPadding)) / json.length) + xPadding
             })
@@ -159,7 +167,39 @@ function getJSON() {
                   .select("#dateValue")
                   .text(d.Place );
 
+                d3.select("#tooltip")
+                  .select("#Name")
+                  .text(d.Name);
+
+                d3.select("#tooltip")
+                  .select("#Year")
+                  .text(d.Year);
+
+                d3.select("#tooltip")
+                  .select("#Place")
+                  .text(d.Place);
+                
+                d3.select("#tooltip")
+                  .select("#Time")
+                  .text(d.Time);
+
+                d3.select("#tooltip")
+	                .select("#Nationality")
+                    .text(d.Nationality);
+                
+                d3.select("#tooltip")
+	                .select("#Doping")
+                    .text(d.Doping);
+
+                d3.select("#tooltip")
+	                .select("#URL")
+                    .text(d.URL);
+                                
+
                 d3.select("#tooltip").classed("hidden", false);
+
+
+
 
                 /*
                 graph.append("text")
@@ -183,7 +223,7 @@ function getJSON() {
                     .attr("fill", "teal");
               */
                 //d3.select("#tooltip").remove();
-                d3.select("#tooltip").classed("hidden", true);
+                //d3.select("#tooltip").classed("hidden", true);
             })
 
 

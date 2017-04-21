@@ -1,7 +1,14 @@
-rect.bar {
+circle.clean {
+  fill: teal;
   transition: all 0.4s; }
-  rect.bar:hover {
+  circle.clean:hover {
     fill: #00b3b3; }
+
+circle.doped {
+  fill: #ad102f;
+  transition: all 0.4s; }
+  circle.doped:hover {
+    fill: crimson; }
 
 #tooltip {
   position: absolute;
