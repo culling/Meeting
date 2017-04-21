@@ -194,7 +194,7 @@ function getJSON() {
 
         graph.append("g")
             .attr("class", "axis")
-            .attr("transform", "translate(" + (xPadding) + ", " +0 + ")")
+            .attr("transform", "translate(" + (xPadding) + ", " +6 + ")")
             .call(yAxis);
 
 

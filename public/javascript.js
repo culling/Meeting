@@ -60,41 +60,49 @@ function getJSON() {
         let yPadding = 30;
         let xPadding = 80;
 
+        let circleSize = 5;
 
-        //let max = d3.max((json), (line) => (line.Place));
+
+        let formatDate  = d3.time.format("%Y-%m-%d");
+        let formatTime  = d3.time.format("%M:%S");
+
+        let maxTime     = d3.max((json), (line) => formatTime.parse(line.Time));
+        let minTime     = d3.min((json), (line) => formatTime.parse(line.Time));
+        let maxPlace    = d3.max((json), (line) => line.Place );
         //let heightModifier = (h / max);
 
-        let formatDate = d3.time.format("%Y-%m-%d");
-        let formatTime = d3.time.format("%M:%S");
 
-        let yearFormat = d3.time.format("%Y");
-        let minuteFormat = d3.time.format("%M");
-        let yearMonthFormat = d3.time.format("%Y %B")
+
+        let yearFormat =        d3.time.format("%Y");
+        let minuteFormat =      d3.time.format("%M:%S");
+        let yearMonthFormat =   d3.time.format("%Y %B");
 
         let xScale = d3.scale.linear()
-            .domain([   d3.min(json, (line) => { return formatTime.parse(line.Time)/*line.Seconds/*(formatDate.parse(line.Seconds))*/ }),
-                        d3.max(json, (line) => { return formatTime.parse(line.Time)/*line.Seconds/*(formatDate.parse(line.Seconds))*/ })
+            .domain([   
+            d3.max(json, (line) => {
+                console.log(maxTime);
+                return maxTime- formatTime.parse(line.Time) })*1.1 ,
+            d3.min(json, (line) => { 
+                return maxTime- formatTime.parse(line.Time) })
             ])
-            .range([xPadding, w]);
+            .range([xPadding, w -xPadding]);
 
 
 
         let yScale = d3.scale.linear()
-            .domain([   0,
-                        d3.max(json, (line) => { return line.Place })])
-            .range([h - yPadding, 20
-            
-            ]);
+            .domain([   (d3.max(json, (line) => { return line.Place }) *1.1 ),
+                        d3.min(json, (line) => { return line.Place })])
+            .range([h - yPadding,
+                20]);
 
 
         let xAxis = d3.svg.axis();
-        xAxis.scale(xScale);
-        //xAxis.ticks(10);
+            xAxis.scale(xScale);
+        
         xAxis.tickFormat( function (line){
-            console.log(line);
-            console.log( (line) );
-            return 10;
-        }, 10);
+            return minuteFormat(d3.time.second(line))
+        } );
+        
         xAxis.orient("bottom");
 
 
@@ -115,28 +123,24 @@ function getJSON() {
             .enter()
             .append("circle")
             .attr("class", (line) => {
-                console.log(line.Doping.length);
+                //console.log(line.Doping.length);
                 let classString = "";
                 if (line.Doping.length < 1){
                      classString = "clean "
-                                            .concat(" ")
-                                            .concat((line.Place))
                 }else{
                      classString = "doped "
-                                            .concat(" ")
-                                            .concat((line.Place))
                 }
 
                 return classString
             })
             //.attr("fill", "teal")
             .attr("cx", (line, i) => {
-                return xScale( formatTime.parse(line.Time) ) //i * ((w - (xPadding)) / json.length) + xPadding
+                return xScale( formatTime.parse(line.Time) - minTime ) //i * ((w - (xPadding)) / json.length) + xPadding
             })
             .attr("cy", (line) => {
-                return yScale(line.Place)
+                return yScale( line.Place)
             })
-            .attr("r", 5)
+            .attr("r", circleSize)
             /*
             .attr("height", (line) => {
                 return (h -yScale(line.Place) -yPadding  )
@@ -145,11 +149,11 @@ function getJSON() {
             */
             .on("mouseover", function(d){
                 //for fill effects 
-                /*d3.select(this)
-                    .attr("fill", "orange");
-                    console.log("Mouseover found");
-                    console.log(d3.select(this));
-                */
+                d3.select(this)
+                    .attr("r", circleSize * 3);
+                    //console.log("Mouseover found");
+                    //console.log(d3.select(this));
+                
 
                 /*
                 d3.select(this)
@@ -194,45 +198,43 @@ function getJSON() {
                 d3.select("#tooltip")
 	                .select("#Nationality")
                     .text(d.Nationality);
-                
-                d3.select("#tooltip")
-	                .select("#Doping")
-                    .text(d.Doping);
+
+                d3.select(".dopeStoryLink")
+                    .remove();
 
                 d3.select("#tooltip")
-	                .select("#URL")
-                    .text(d.URL);
-                                
+                    .select("#Doping")
+                    .append("div")
+                    .attr("class", "dopeStoryLink")
+                    .html('<a href="'+d.URL +'" >'+ d.Doping+"</a>" )
 
                 d3.select("#tooltip").classed("hidden", false);
-
-
-
-
-                /*
-                graph.append("text")
-                    .attr("id", "tooltip")
-                    .attr("x", xPosition)
-                    .attr("y", yPosition)
-                    .attr("text-anchor", "middle")
-                    .attr("font-family", "sans-serif")
-                    .attr("font-size", "11px")
-                    .attr("font-weight", "bold")
-                    .attr("fill", "black")
-                    .text(d);
-                */
             })
 
             .on("mouseout", function(){
-              /*
+
                 d3.select(this)
-                    .transition(9000)
-                    .delay(500)
-                    .attr("fill", "teal");
-              */
-                //d3.select("#tooltip").remove();
+                    .attr("r", circleSize);
+
+              
+                d3.select("#tooltip")
+                    .transition()
+                    .delay(3000)
+                    .attr("class", "hidden");
+              
+
+                //.remove();
                 //d3.select("#tooltip").classed("hidden", true);
             })
+
+        let tooltip = d3.select("#tooltip");
+            tooltip.on("mouseover", function(d){
+                //for fill effects 
+                d3.select(this).classed("hidden", false)
+            });
+            tooltip.on("mouseout", function (d){
+                d3.select(this).classed("hidden", true)            
+            });
 
 
 
@@ -243,7 +245,7 @@ function getJSON() {
 
         graph.append("g")
             .attr("class", "axis")
-            .attr("transform", "translate(" + (xPadding) + ", " +0 + ")")
+            .attr("transform", "translate(" + (xPadding) + ", " +6 + ")")
             .call(yAxis);
 
 

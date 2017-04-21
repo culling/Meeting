@@ -1,14 +1,21 @@
 circle.clean {
-  fill: teal;
+  fill: #009900;
   transition: all 0.4s; }
   circle.clean:hover {
-    fill: #00b3b3; }
+    fill: #00cc00; }
 
 circle.doped {
   fill: #ad102f;
   transition: all 0.4s; }
   circle.doped:hover {
     fill: crimson; }
+
+html {
+  background-image: url("https://upload.wikimedia.org/wikipedia/commons/7/75/V%C3%A9lodi_Dijon.jpg");
+  background-size: cover; }
+
+body {
+  background-color: rgba(255, 255, 255, 0.75); }
 
 #tooltip {
   position: absolute;
@@ -17,9 +24,12 @@ circle.doped {
   padding: 10px;
   background-color: white;
   border-radius: 10px;
-  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4); }
+  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+  transition: opacity 3s ease-in;
+  opacity: 1; }
   #tooltip.hidden {
-    display: none; }
+    opacity: 0;
+    transition: opacity 6s ease-out; }
 
 #tooltip p {
   margin: 0;
