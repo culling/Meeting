@@ -65,12 +65,15 @@ function getJSON() {
         //let heightModifier = (h / max);
 
         let formatDate = d3.time.format("%Y-%m-%d");
+        let formatTime = d3.time.format("%M:%S");
+
         let yearFormat = d3.time.format("%Y");
+        let minuteFormat = d3.time.format("%M");
         let yearMonthFormat = d3.time.format("%Y %B")
 
         let xScale = d3.scale.linear()
-            .domain([   d3.min(json, (line) => { return line.Seconds/*(formatDate.parse(line.Seconds))*/ }),
-                        d3.max(json, (line) => { return line.Seconds/*(formatDate.parse(line.Seconds))*/ })
+            .domain([   d3.min(json, (line) => { return formatTime.parse(line.Time)/*line.Seconds/*(formatDate.parse(line.Seconds))*/ }),
+                        d3.max(json, (line) => { return formatTime.parse(line.Time)/*line.Seconds/*(formatDate.parse(line.Seconds))*/ })
             ])
             .range([xPadding, w]);
 
@@ -86,7 +89,12 @@ function getJSON() {
 
         let xAxis = d3.svg.axis();
         xAxis.scale(xScale);
-        xAxis.ticks(10);
+        //xAxis.ticks(10);
+        xAxis.tickFormat( function (line){
+            console.log(line);
+            console.log( (line) );
+            return 10;
+        }, 10);
         xAxis.orient("bottom");
 
 
@@ -110,11 +118,11 @@ function getJSON() {
                 console.log(line.Doping.length);
                 let classString = "";
                 if (line.Doping.length < 1){
-                     classString = "clean ".concat((line.Seconds))
+                     classString = "clean "
                                             .concat(" ")
                                             .concat((line.Place))
                 }else{
-                     classString = "doped ".concat((line.Seconds))
+                     classString = "doped "
                                             .concat(" ")
                                             .concat((line.Place))
                 }
@@ -123,7 +131,7 @@ function getJSON() {
             })
             //.attr("fill", "teal")
             .attr("cx", (line, i) => {
-                return xScale(line.Seconds) //i * ((w - (xPadding)) / json.length) + xPadding
+                return xScale( formatTime.parse(line.Time) ) //i * ((w - (xPadding)) / json.length) + xPadding
             })
             .attr("cy", (line) => {
                 return yScale(line.Place)
