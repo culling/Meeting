@@ -1,15 +1,3 @@
-circle.clean {
-  fill: #009900;
-  transition: all 0.4s; }
-  circle.clean:hover {
-    fill: #00cc00; }
-
-circle.doped {
-  fill: #ad102f;
-  transition: all 0.4s; }
-  circle.doped:hover {
-    fill: crimson; }
-
 .body-container {
   background-color: rgba(255, 255, 255, 0.75); }
 
@@ -31,3 +19,7 @@ circle.doped {
   #tooltip.hidden {
     opacity: 0;
     transition: opacity 6s ease-out; }
+
+.monthLabel {
+  font-family: sans-serif;
+  font-weight: 900; }
