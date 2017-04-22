@@ -1,6 +1,6 @@
-//ready to start on D3.JS
-// Visualize line with a Bar Chart
 
+// Visualize line with a Heat Map
+//http://bl.ocks.org/tjdecke/5558084
 
 
 
@@ -12,85 +12,16 @@ $('document').ready(function() {
 
 function getJSON() {
 
-    let url = "https://raw.githubusercontent.com/FreeCodeCamp/ProjectReferenceData/master/cyclist-data.json"
+    //let url = "https://raw.githubusercontent.com/FreeCodeCamp/ProjectReferenceData/master/cyclist-data.json"
+    let url = "https://raw.githubusercontent.com/FreeCodeCamp/ProjectReferenceData/master/global-temperature.json"
     $.getJSON(url, function(json) {
 
-        let h = window.innerHeight * 0.6 ;
+        let h = window.innerHeight * 0.6;
         let w = window.innerWidth  * 0.6;
-        let barPaddingWidth = 0;
+        let barPaddingWidth = 1;
         let yPadding = 30;
         let xPadding = 80;
-
-        let circleSize = 5;
-
-        let formatTime  = d3.time.format("%M:%S");
-        let minuteFormat =      d3.time.format("%M:%S");
-        let yearMonthFormat =   d3.time.format("%Y %B");
-
-        let maxTime     = d3.max((json), (line) => formatTime.parse(line.Time));
-        let minTime     = d3.min((json), (line) => formatTime.parse(line.Time));
-        let maxPlace    = d3.max((json), (line) => line.Place );
-
-
-
-        let xScale = d3.scale.linear()
-            .domain([   (d3.max(json, (line) => {
-                return maxTime- formatTime.parse(line.Time) })*1.1 ),
-                        d3.min(json, (line) => { 
-                return maxTime- formatTime.parse(line.Time) })
-            ])
-            .range([xPadding, w -xPadding]);
-
-        let yScale = d3.scale.linear()
-            .domain([   (d3.max(json, (line) => {
-                return line.Place }) *1.1 ),
-                        d3.min(json, (line) => {
-                return line.Place })])
-            .range([h - yPadding, 20]);
-
-
-
-
-        let xAxis = d3.svg.axis()
-            .scale(xScale)
-            .tickFormat( function (line){
-                return minuteFormat(d3.time.second(line))
-            })
-            .orient("bottom");
-
-        let yAxis = d3.svg.axis()
-            .scale(yScale)
-            .ticks(10)
-            .orient("left")
-
-
-
-
-        let graph = d3.select("#graph")
-            .append("svg")
-            .attr("width", w)
-            .attr("height", h);
-
-        graph.selectAll("circle")
-            .data(json)
-            .enter()
-            .append("circle")
-            .attr("class", (line) => {
-                let classString = "";
-                if (line.Doping.length < 1){
-                     classString = "clean "
-                }else{
-                     classString = "doped "
-                }
-                return classString
-            })
-            .attr("cx", (line, i) => {
-                return xScale( formatTime.parse(line.Time) - minTime );
-            })
-            .attr("cy", (line) => {
-                return yScale( line.Place);
-            })
-            .attr("r", circleSize)
+            /*
             .on("mouseover", function(d){
                 d3.select(this)
                     .attr("r", circleSize * 3);
@@ -99,36 +30,11 @@ function getJSON() {
 
                 d3.select("#tooltip")
                   .style("left", xPosition + "px")
-                  .style("top", yPosition + "px")
-                  .select("#value")
-                  .text(d.Seconds);
-
-                d3.select("#tooltip")
-                  .select("#dateValue")
-                  .text(d.Place );
+                  .style("top", yPosition + "px");
 
                 d3.select("#tooltip")
                   .select("#Name")
                   .text(d.Name);
-
-                d3.select("#tooltip")
-                  .select("#Year")
-                  .text(d.Year);
-
-                d3.select("#tooltip")
-                  .select("#Place")
-                  .text(d.Place);
-                
-                d3.select("#tooltip")
-                  .select("#Time")
-                  .text(d.Time);
-
-                d3.select("#tooltip")
-	                .select("#Nationality")
-                    .text(d.Nationality);
-
-                d3.select(".dopeStoryLink")
-                    .remove();
 
                 d3.select("#tooltip")
                     .select("#Doping")
@@ -137,6 +43,7 @@ function getJSON() {
                     .html('<a href="'+d.URL +'" >'+ d.Doping+"</a>" )
 
                 d3.select("#tooltip").classed("hidden", false);
+                
             })
             .on("mouseout", function(){
                 d3.select(this)
@@ -155,18 +62,59 @@ function getJSON() {
                 .on("mouseout", function (d){
                 d3.select(this).classed("hidden", true)            
             });
+            */
+
+        
+
+        let getMonth = d3.time.format("%m");
+        let getMonthName = d3.time.format("%B");
+        console.log(json);
+        console.log(json.monthlyVariance[0].month);
+
+        let months = [  "January",
+                        "February",
+                        "March",
+                        "April",
+                        "May",
+                        "June",
+                        "July",
+                        "August",
+                        "September",
+                        "October",
+                        "November",
+                        "December"]
+        let margins = {top: 20,
+                        left: 20,
+                        bottom: 20,
+                        right: 20}
+
+        let svg = d3.select("#graph")
+                    .append("svg")
+                    .attr("width",  w + margins.left + margins.right )
+                    .attr("height", h + margins.top  + margins.bottom)
+                    .attr("style", 'background-color: teal');
+
+            svg.selectAll(".monthLabel")
+                .data(months)
+                .enter()
+                .append("text")
+                .text( (month)=>{return month} )
+                .attr("x", margins.left)
+                .attr("y", (month, i )=>{return (i * (h/months.length)) + margins.top } )
+                .attr("class", ".monthLabel");
 
 
-        //Set the Axis on the chart
-        graph.append("g")
-            .attr("class", "axis")
-            .attr("transform", "translate(" + (0) + ", " + (h - yPadding) + ")")
-            .call(xAxis);
+            /*.selectAll("p")
+            .data(json.monthlyVariance)
+            .enter()
+            */
+            /*.append("p")
+            .text( (line) =>{
+                let d3Month   = getMonth.parse( line.month.toString() );
+                return '"'.concat( getMonthName( (d3Month))).concat('",') ;
+            })
+            */
 
-        graph.append("g")
-            .attr("class", "axis")
-            .attr("transform", "translate(" + (xPadding) + ", " +6 + ")")
-            .call(yAxis);
 
     });
 }
