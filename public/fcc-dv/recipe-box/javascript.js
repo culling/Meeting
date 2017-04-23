@@ -5,8 +5,37 @@ class TestComponent extends React.Component {
 
         this.state=({
             editState: "edit-state",
-            recipes: JSON.parse(localStorage.recipes),
+            //recipes: (JSON.parse(localStorage.recipes) ) || undefined,
             testRecipes : [
+                        {
+recipeName: "Pulla",
+	ingredients:    [	
+"250ml Milk",
+"1 Egg",
+"1/2 Cup of Castor sugar",
+"3 Tablespoons Cardamon",
+"pinch of salt",
+"500g Flour",
+"1 packet of Activated Yeast",
+"75g Softened Butter"],
+            methodSteps:        [
+"Warm the milk in a saucepan to about blood temprature", 
+"Beat the egg into the warm milk",
+"Add the sugar, salt and cardamom to the milk and egg",
+"Slowly add the warm milk mixture to the flour and mix in",
+"Continue to kneed the dough until it is a fully mixed",
+"Kneed the softened butter into the dough",
+"Kneed dough for 10 minutes",
+"Put the dough in a large bowl and cover with a warm damp cloth",
+"Place the bowl in a bath/sink of warm water near blood temp",
+"Wait for an hour for the dough to rise",
+"Punch the dough down and kneed lightly before cutting into 20 pieces and rolling into balls",
+"Preheat oven to 200 C ",
+"Place dough balls on a baking tray and allow to rise for 30 minutes",
+"Optionally, glaze the buns with a soft butter and beaten egg mixture",
+"Sprinkle with sugar",
+"Bake the buns for 30 minutes or until golden brown" ]
+        },
         {
             recipeName: "Tuna Mornay",
             ingredients:    ["tuna","flour","salt","butter","milk","spring onions"],
@@ -21,11 +50,22 @@ class TestComponent extends React.Component {
         }
         ]
     })
+
+    try {
+        //JSON.parse(localStorage.recipes);
+        this.state.recipes= JSON.parse(localStorage.recipes);
+        //this.state.recipes= this.state.testRecipes;
+
+    }catch(e){
+        this.state.recipes= this.state.testRecipes;
+    }
     
+    /*
     if(this.state.recipes.length < 1){
         console.log("length of recipes: "+ this.state.recipes.length)
         this.state.recipes = this.state.testRecipes;
     }
+    */
 
     }
     
@@ -136,8 +176,8 @@ class Recipe extends React.Component{
 
     _showDetailsPane(){
         console.log("detailsState: "+ this.detailsState );
-
-        this.detailsState = ((this.detailsState === "details-div-visible" )? "details-div-hidden": "details-div-visible")
+        this.detailsState = ((this.detailsState === "details-div-visible" )? "details-div-hidden": "details-div-visible");
+        //this.setState("detailsState", ((this.detailsState === "details-div-visible" )? "details-div-hidden": "details-div-visible") );
         this.forceUpdate();
     }
 
@@ -161,7 +201,6 @@ class Recipe extends React.Component{
 
     _enableEdit(){
         console.log("editState: "+ this.editState );
-
         this.editState = ((this.editState === "edit-div-visible" )? "edit-div-hidden": "edit-div-visible")
         this.forceUpdate();
     } 
