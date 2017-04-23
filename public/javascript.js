@@ -36,6 +36,15 @@ function getJSON() {
                     .attr("width",  w + margins.left +( margins.right * 2) )
                     .attr("height", h + margins.top  + margins.bottom)
                     .attr("style", 'background-color: teal');
+            
+            /*
+            svg.append("defs")
+                .html(`
+                    <pattern id="image" x="0" y="0" patternUnits="userSpaceOnUse" height="120" width="120">
+                        <image x="0" y="0" xlink:href="https://www.cs.mun.ca/~h65ped/Public/country%20data%20for%20force%20directed%20graph/flags.png"></image>
+                    </pattern>
+                    `);
+            */
 
         let link = svg.selectAll(".link");
         let node = svg.selectAll(".node");
@@ -43,13 +52,7 @@ function getJSON() {
 
         let nodes = json.nodes;
         let links = json.links;
-        /*
-        let nodes = [   {"name":"test" },
-                        {"name":"test2" }
-            ];
 
-        let links = [{"source": 0, "target":1}]
-        */
 
         let linkSize = 5;
 
@@ -62,7 +65,7 @@ function getJSON() {
                     .start();
 
             force.on("tick", tick);
-            //force.linkDistance(w/2);
+
         
         
         link = link.data( links )
@@ -73,13 +76,25 @@ function getJSON() {
         
         node = node.data(nodes)
             .enter()
+            .append("img")
+            .attr("class", (line,i ) => {
+                let flagCode = "flag flag-".concat(line.code);
+                return "node ".concat(flagCode);
+            })
+            .attr("width", 20)
+            .attr("height", 20);
+
+            //.html( '<p style="position: absolute;   display: inline-block; ">Test</p>' )
+            /*
             .append("circle")
             //.append("div")
-            .attr("class", "node")
-            //.attr("style", "fill: white;")
-            .attr("style", (line)=>{
+            .attr("class", (line,i ) => {
+                let flagCode = "flag flag-".concat(line.code);
+                return "node ".concat(flagCode);
+            })*/
 
-                /**/
+            /*
+            .attr("style", (line)=>{
                 let red   =  Math.floor(Math.random() * 250);
                 let green =  0;
                 let blue  =  Math.floor(Math.random() * 250);
@@ -89,20 +104,18 @@ function getJSON() {
                                         .concat(blue);
                     //console.log(colorString);
                 let color = 'fill: rgb('.concat(colorString).concat(')');
-                //let color = "rgb(200,155,120)";
-                //console.log(color);
-                return (color) 
-                /**/
+                //return (color) 
                 
-                })
+                let imgUrl = "https://www.cs.mun.ca/~h65ped/Public/country%20data%20for%20force%20directed%20graph/flags.png";
+                //let fill = 'fill: url("' + imgUrl +'")';
+
+                //background-position: -16px 0
+                let fill = 'fill: url("#image")';
+                return fill;
+            })
             .attr("r", linkSize);
+            */
 
-
-        
-
-            //.attr("style", "height: 5; width: 5; border-radius: 50%");
-
-        /**/
 
         function tick() {
         link.attr("x1", function(d) { return d.source.x; })
@@ -110,9 +123,24 @@ function getJSON() {
             .attr("x2", function(d) { return d.target.x; })
             .attr("y2", function(d) { return d.target.y; });
 
+
+        node.attr("style", function(d){  
+                let ws = "left: ".concat( Math.round( d.x)).concat("; top: ").concat( Math.round(d.y)) ;
+                    ws = ws.concat(';background: url("https://www.cs.mun.ca/~h65ped/Public/country%20data%20for%20force%20directed%20graph/flags.png") no-repeat')
+                    ws = ws.concat(';background-position: -16px 0;')        
+
+                    //background:url("https://www.cs.mun.ca/~h65ped/Public/country%20data%20for%20force%20directed%20graph/flags.png") no-repeat
+                return ws;
+        });
+
+        };
+
+        /*
+        node.style('left', d => (d.x - 8) + "px")
+			.style('top', d => (d.y - 5) + "px");
         node.attr("cx", function(d) { return d.x; })
             .attr("cy", function(d) { return d.y; });
-        }
+        }*/
 
 
         
