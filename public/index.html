@@ -15,7 +15,7 @@
             crossorigin="anonymous">
         </script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.js"
-            crossorigin="anonymous">
+            crossorigin="anonymous" >
         </script>
 
         <!-- React -->
@@ -32,28 +32,18 @@
         <script src="./javascript.js" type="text/babel" ></script>
         <link rel="stylesheet"        href="main.css">
 
-        <link   rel="stylesheet"        
-                href="https://www.cs.mun.ca/~h65ped/Public/country%20data%20for%20force%20directed%20graph/flags.css">
+
 
     </head>
     <body>
+        <div id="tooltip" class="hidden">
+                <p><strong><span id="Country">        </span></strong></p>
+                
+        </div>
     <br />
 
-<!-- svg width="8" height="8">
-  <defs>
-    <pattern id="image" patternUnits="userSpaceOnUse" height="4" width="4">
-      <image x="0" y="0" height="4" width="4" xlink:href="http://i.imgur.com/7Nlcay7.jpg"></image>
-    </pattern>
-  </defs>
-  <circle id='top' cx="4" cy="4" r="4" fill="url(#image)"/>
-</svg -->
 
-        <div id="tooltip" class="hidden">
-                <p><strong>Year:        <span id="Year">        </span></strong></p>
-                <p><strong>Month:       <span id="Month">       </span></strong></p>
-                <p><strong>Temprature:  <span id="Temprature">  </span></strong></p>
-                <p><strong>Variance:    <span id="Variance">    </span></strong></p>
-        </div>
+
 
     <div class="body-container">
         <div class="container">
@@ -62,7 +52,14 @@
         </div>
         <br />
 
-        <div id="graph"></div>
+        <div id="graph">
+            <div id="flags"></div>
+        </div>
+
+        <div id="chart">
+            <div id="flagbox">
+            </div>
+        </div>
         </div>
     </body>
 </html>
