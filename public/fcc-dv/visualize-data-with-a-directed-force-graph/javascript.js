@@ -12,13 +12,10 @@ $('document').ready(function() {
 
 function getJSON() {
 
-    //let url   = "https://raw.githubusercontent.com/DealPete/forceDirected/master/countries.json";
-    //let url   = "https://raw.githubusercontent.com/FreeCodeCamp/ProjectReferenceData/master/meteorite-strike-data.json";
-    let url     = "https://d3js.org/world-50m.v1.json";
+    let url = "https://raw.githubusercontent.com/DealPete/forceDirected/master/countries.json";
+
     $.getJSON(url, function(json) {
         console.log(json);
-
-        
 
         let h = window.innerHeight * 0.6;
         let w = window.innerWidth  * 0.9;
@@ -34,11 +31,9 @@ function getJSON() {
                     .attr("width",  w + margins.left +( margins.right * 2) )
                     .attr("height", h + margins.top  + margins.bottom)
                     .attr("style", 'background-color: teal');
+            
 
 
-          
-
-        /*
         let link = svg.selectAll(".link");
         let node =  d3.select('#flags').selectAll(".node");
 
@@ -110,7 +105,7 @@ function getJSON() {
                 return (d.y + 130 )+'px';
             });
         };
-        */
+
 
 
 
