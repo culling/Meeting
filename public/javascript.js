@@ -6,15 +6,69 @@
 
 $('document').ready(function() {
     console.log("javascript Loaded");
-    getJSON();
+    drawGraph();
 
 });
 
-function getJSON() {
+function drawGraph() {
+
+
+        let h = window.innerHeight * 0.6;
+        let w = window.innerWidth  * 0.9;
+
+        let margins = {top:     h*0.05,
+                        left:   w*0.05,
+                        bottom: h*0.10,
+                        right:  w*0.05}
+
+        
+        let svg = d3.select("#graph")
+                    .append("svg")
+                    .attr("width",  w + margins.left +( margins.right * 2) )
+                    .attr("height", h + margins.top  + margins.bottom)
+                    .attr("style", 'background-color: teal');
+
+
+
 
     //let url   = "https://raw.githubusercontent.com/DealPete/forceDirected/master/countries.json";
     //let url   = "https://raw.githubusercontent.com/FreeCodeCamp/ProjectReferenceData/master/meteorite-strike-data.json";
     let url     = "https://d3js.org/world-50m.v1.json";
+    //the geodata in a separate file and load it in using d3.json():
+    /*
+        d3.json(url, function(json) {
+        svg.selectAll("path")
+        .data(json.objects)
+        .enter()
+        .append("path")
+        .attr("d", (o)=>{return o.countries});
+        });
+    */
+    
+
+    let projection = d3.geo.patterson()
+        .scale(153)
+        .translate([w / 2, h / 2])
+        .precision(0.1);
+
+    let path = d3.geo.path()
+        .projection(projection);
+
+    d3.json("https://d3js.org/world-50m.v1.json", (world)=>{
+      //if (error) throw error;
+    svg.insert("path", ".graticule")
+        .datum(topojson.feature(world, world.objects.land))
+        .attr("class", "land")
+        .attr("d", path);
+    svg.insert("path", ".graticule")
+        .datum(topojson.mesh(world, world.objects.countries, function(a, b) { return a !== b; }))
+        .attr("class", "boundary")
+        .attr("d", path);
+    });
+
+
+
+    /*
     $.getJSON(url, function(json) {
         console.log(json);
 
@@ -115,5 +169,5 @@ function getJSON() {
 
 
         
-    });
+    //});
 }
