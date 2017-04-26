@@ -29,8 +29,6 @@ function drawGraph() {
                     .attr("style", 'background-color: teal');
 
 
-
-
     //let url   = "https://raw.githubusercontent.com/DealPete/forceDirected/master/countries.json";
     //let url   = "https://raw.githubusercontent.com/FreeCodeCamp/ProjectReferenceData/master/meteorite-strike-data.json";
     let url     = "https://d3js.org/world-50m.v1.json";
@@ -64,7 +62,38 @@ function drawGraph() {
         .datum(topojson.mesh(world, world.objects.countries, function(a, b) { return a !== b; }))
         .attr("class", "boundary")
         .attr("d", path);
+
+        // Plot the meteors
+        d3.json("https://raw.githubusercontent.com/FreeCodeCamp/ProjectReferenceData/master/meteorite-strike-data.json", (meteorites)=>{
+        //if (error) throw error;
+            svg.selectAll("circle")
+                .data(meteorites.features)
+                .enter()
+                .append("circle")
+                .attr("cx", (d, i)=>{
+                    console.log(d);
+
+                    if (d.geometry != null){
+                    return projection([d.geometry.coordinates[0], d.geometry.coordinates[1]])[0];
+                    }else {
+                        return 1;
+                    }
+                })
+                .attr("cy", (d, i)=>{
+                    if (d.geometry != null){
+                        return projection([d.geometry.coordinates[0], d.geometry.coordinates[1]])[1];
+                    }else{
+                        return 1;
+                    }
+                
+                })
+                .attr("r", 5)
+                .attr("class", "meteor");
+        });
+
     });
+
+
 
 
 
