@@ -2,6 +2,8 @@
 // 
 // Page 167 - Learning d3dotjs - Data Visualisation Second Generation
 //
+// http://bl.ocks.org/d3noob/5193723 << helpful for dots on map
+// http://www.d3noob.org/2013/03/a-simple-d3js-map-explained.html  << original article for it
 
 
 $('document').ready(function() {
