@@ -17,7 +17,7 @@
 
 #tooltip.hidden {
   opacity: 0;
-  transition: opacity 6s ease-out; }
+  transition: opacity 0.9s ease-out; }
 
 .meteor {
   position: absolute;

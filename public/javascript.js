@@ -12,8 +12,11 @@ $('document').ready(function() {
 
 });
 
+
+
 function drawGraph() {
 
+        let yearFormat =   d3.time.format("%Y");
 
         let h = window.innerHeight * 0.6;
         let w = window.innerWidth  * 0.9;
@@ -54,6 +57,7 @@ function drawGraph() {
     let path = d3.geo.path()
         .projection(projection);
 
+
     d3.json("https://d3js.org/world-50m.v1.json", (world)=>{
       //if (error) throw error;
     svg.insert("path", ".graticule")
@@ -68,12 +72,12 @@ function drawGraph() {
         // Plot the meteors
         d3.json("https://raw.githubusercontent.com/FreeCodeCamp/ProjectReferenceData/master/meteorite-strike-data.json", (meteorites)=>{
         //if (error) throw error;
-            svg.selectAll("circle")
+            let meteors = svg.selectAll("circle")
                 .data(meteorites.features)
                 .enter()
                 .append("circle")
                 .attr("cx", (d, i)=>{
-                    console.log(d);
+                    //console.log(d);
 
                     if (d.geometry != null){
                     return projection([d.geometry.coordinates[0], d.geometry.coordinates[1]])[0];
@@ -92,11 +96,58 @@ function drawGraph() {
                 .attr("r", (d)=> {
                         return 3+ (Math.sqrt(d.properties.mass) / (h/2) )
                     })
-                .attr("class", "meteor");
+                .attr("class", "meteor")
+                .on("mouseover", function(d){
+                    d3.select(this)
+                        .attr("r", (3+ (Math.sqrt(d.properties.mass) / (h/2) * 3 ))) ;
+                    var xPosition = parseFloat(d3.event.pageX)
+                    var yPosition = parseFloat(d3.event.pageY +14)
+
+                    d3.select("#tooltip")
+                    .style("left", xPosition + "px")
+                    .style("top", yPosition + "px");
+
+                    d3.select("#tooltip")
+                    .select("#name")
+                    .text(d.properties.name );
+
+                    d3.select("#tooltip")
+                    .select("#mass")
+                    .text(d.properties.mass);
+
+                    d3.select("#tooltip")
+                    .select("#year")
+                    .text(()=>{
+                        let thisDate = new Date (d.properties.year); 
+                        return thisDate.getFullYear() ;
+                    }  );
+
+                    d3.select("#tooltip")
+                    .select("#class")
+                    .text(d.properties.recclass);
+
+                    d3.select("#tooltip")
+                    .select("#lat")
+                    .text(d.properties.reclat);
+
+                    d3.select("#tooltip")
+                    .select("#lon")
+                    .text(d.properties.reclong);
+
+
+
+
+                    d3.select("#tooltip").classed("hidden", false);
+                })
+                .on("mouseout", function (d){
+                     d3.select(this)
+                        .attr("r", (3+ (Math.sqrt(d.properties.mass) / (h/2)))) ;
+                    //d3.select(this).classed("hidden", true);
+                    d3.select("#tooltip").classed("hidden", true);
+                });
         });
 
     });
-
 
 
 
