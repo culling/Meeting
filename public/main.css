@@ -23,7 +23,8 @@
   position: absolute;
   width: 16px;
   height: 11px;
-  fill: rgba(240, 240, 90, 0.6); }
+  fill: rgba(100, 100, 255, 0.6);
+  stroke: #6464ff; }
 
 .land {
   fill: black; }

@@ -89,7 +89,9 @@ function drawGraph() {
                     }
                 
                 })
-                .attr("r", 5)
+                .attr("r", (d)=> {
+                        return 3+ (Math.sqrt(d.properties.mass) / (h/2) )
+                    })
                 .attr("class", "meteor");
         });
 
