@@ -7,6 +7,7 @@ console.log("Loaded JS");
             }, 2000);
         });
 
+        jQuery(".button-collapse").sideNav();
 
 });
 
@@ -24,7 +25,7 @@ class Navbar extends React.Component{
             <nav>
                 <div className="nav-wrapper">
                     <a href="#" target="_blank" className="brand-logo heading-name"></a>
-                    <a href="#" data-activates="mobile" className="button-collapse"><i className="material-icons">menu</i></a>
+                    <a href="#" data-activates="mobile-menu" className="button-collapse"><i className="material-icons">menu</i></a>
                     <ul className="right hide-on-med-and-down">    
                         <li>
                             <a target="_blank" href="https://github.com/culling/">Github</a>
@@ -36,9 +37,20 @@ class Navbar extends React.Component{
                             <a href="#" id="projects-button"  >Projects</a>
                         </li>
                     </ul>
+                  <ul className="side-nav" id="mobile-menu">
+                        <li>
+                            <a target="_blank" href="https://github.com/culling/">Github</a>
+                        </li>
+                        <li>
+                            <a target="_blank" href="https://codepen.io/culling/">Codepen</a>
+                        </li>
+                        <li>
+                            <a href="#" id="projects-button"  >Projects</a>
+                        </li>                    
+                    
+                  </ul>
                 </div>
-            </nav>
-        )
+            </nav>        )
     }
 }
 
@@ -49,7 +61,9 @@ class MyInfoContainer extends React.Component{
     render(){
         return(
             <div className="bio-container container" >
+                
                 <div className="card">
+                    
                     <div className="bio-heading">
                         Gene Culling
                     </div>
@@ -83,6 +97,7 @@ class MyInfoContainer extends React.Component{
                         </div>
                     </div>
                 </div>
+                
             </div>
         )
     }
