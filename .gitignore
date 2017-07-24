@@ -52,5 +52,16 @@ Temporary Items
 node_modules/
 public/lib/
 
+# =============================
+# Mongo data files and Dirctory
+# =============================
+data/
+
 # VS Code Files
 .vscode
+
+# =============================
+# Secrets
+# =============================
+config/secrets/
+.env

@@ -1,0 +1,30 @@
+#tooltip {
+  z-index: 1;
+  position: absolute;
+  width: 200px;
+  height: auto;
+  padding: 10px;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+  opacity: 1; }
+
+#tooltip p {
+  margin: 0;
+  font-family: sans-serif;
+  font-size: 16px;
+  line-height: 20px; }
+
+#tooltip.hidden {
+  opacity: 0;
+  transition: opacity 0.9s ease-out; }
+
+.meteor {
+  position: absolute;
+  width: 16px;
+  height: 11px;
+  fill: rgba(100, 100, 255, 0.6);
+  stroke: #6464ff; }
+
+.land {
+  fill: black; }

@@ -1,132 +1,202 @@
-// Map Data Across the Globe
+$(document).ready(function(){
+console.log("Loaded JS");
 
-
-$('document').ready(function() {
-    console.log("javascript Loaded");
-    drawGraph();
-});
-
-
-
-function drawGraph() {
-
-        let yearFormat =   d3.time.format("%Y");
-
-        let h = window.innerHeight * 0.6;
-        let w = window.innerWidth  * 0.9;
-
-        let margins = {top:     h*0.05,
-                        left:   w*0.05,
-                        bottom: h*0.10,
-                        right:  w*0.05}
-
-        
-        let svg = d3.select("#graph")
-                    .append("svg")
-                    .attr("width",  w + margins.left +( margins.right * 2) )
-                    .attr("height", h + margins.top  + margins.bottom)
-                    .attr("style", 'background-color: teal');
-
-
-
-    let url     = "https://d3js.org/world-50m.v1.json";
-
-    let projection = d3.geo.patterson()
-        .scale(153)
-        .translate([w / 2, h / 2])
-        .precision(0.1);
-
-    let path = d3.geo.path()
-        .projection(projection);
-
-
-    d3.json("https://d3js.org/world-50m.v1.json", (world)=>{
-      //if (error) throw error;
-    svg.insert("path", ".graticule")
-        .datum(topojson.feature(world, world.objects.land))
-        .attr("class", "land")
-        .attr("d", path);
-    svg.insert("path", ".graticule")
-        .datum(topojson.mesh(world, world.objects.countries, function(a, b) { return a !== b; }))
-        .attr("class", "boundary")
-        .attr("d", path);
-
-        // Plot the meteors
-        d3.json("https://raw.githubusercontent.com/FreeCodeCamp/ProjectReferenceData/master/meteorite-strike-data.json", (meteorites)=>{
-        
-            let meteors = svg.selectAll("circle")
-                .data(meteorites.features)
-                .enter()
-                .append("circle")
-                .attr("cx", (d, i)=>{
-
-                    if (d.geometry != null){
-                    return projection([d.geometry.coordinates[0], d.geometry.coordinates[1]])[0];
-                    }else {
-                        return 1;
-                    }
-                })
-                .attr("cy", (d, i)=>{
-                    if (d.geometry != null){
-                        return projection([d.geometry.coordinates[0], d.geometry.coordinates[1]])[1];
-                    }else{
-                        return 1;
-                    }
-                
-                })
-                .attr("r", (d)=> {
-                        return 3+ (Math.sqrt(d.properties.mass) / (h/2) )
-                    })
-                .attr("class", "meteor")
-                .on("mouseover", function(d){
-                    d3.select(this)
-                        .attr("r", (3+ (Math.sqrt(d.properties.mass) / (h/2) * 3 ))) ;
-                    var xPosition = parseFloat(d3.event.pageX)
-                    var yPosition = parseFloat(d3.event.pageY +14)
-
-                    d3.select("#tooltip")
-                    .style("left", xPosition + "px")
-                    .style("top", yPosition + "px");
-
-                    d3.select("#tooltip")
-                    .select("#name")
-                    .text(d.properties.name );
-
-                    d3.select("#tooltip")
-                    .select("#mass")
-                    .text(d.properties.mass);
-
-                    d3.select("#tooltip")
-                    .select("#year")
-                    .text(()=>{
-                        let thisDate = new Date (d.properties.year); 
-                        return thisDate.getFullYear() ;
-                    }  );
-
-                    d3.select("#tooltip")
-                    .select("#class")
-                    .text(d.properties.recclass);
-
-                    d3.select("#tooltip")
-                    .select("#lat")
-                    .text(d.properties.reclat);
-
-                    d3.select("#tooltip")
-                    .select("#lon")
-                    .text(d.properties.reclong);
-
-
-
-
-                    d3.select("#tooltip").classed("hidden", false);
-                })
-                .on("mouseout", function (d){
-                     d3.select(this)
-                        .attr("r", (3+ (Math.sqrt(d.properties.mass) / (h/2)))) ;
-                    d3.select("#tooltip").classed("hidden", true);
-                });
+        jQuery("#projects-button").click(function() {
+            jQuery('html, body').animate({
+                scrollTop: $("#projects-container").offset().top
+            }, 2000);
         });
 
-    });
+
+});
+
+class Navbar extends React.Component{
+    constructor(){
+        super();
+    }
+
+    _projectsClicked(){
+
+    }
+
+    render(){
+        return(
+            <nav>
+                <div className="nav-wrapper">
+                    <a href="#" target="_blank" className="brand-logo heading-name"></a>
+                    <a href="#" data-activates="mobile" className="button-collapse"><i className="material-icons">menu</i></a>
+                    <ul className="right hide-on-med-and-down">    
+                        <li>
+                            <a target="_blank" href="https://github.com/culling/">Github</a>
+                        </li>
+                        <li>
+                            <a target="_blank" href="https://codepen.io/culling/">Codepen</a>
+                        </li>
+                        <li>
+                            <a href="#" id="projects-button"  >Projects</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        )
+    }
+}
+
+class MyInfoContainer extends React.Component{
+    constructor(){
+        super();
+    }
+    render(){
+        return(
+            <div className="bio-container container" >
+                <div className="card">
+                    <div className="bio-heading">
+                        Gene Culling
+                    </div>
+
+                    <div className="card-stacked">
+                        <br />
+                        <div className="bio-sub-heading">
+                            Full Stack Javascript developer with experience in Systems Administration
+                        </div>
+                        <div className="bio-details">
+                            <ul>
+                                <li>10 years Systems Administration and Helpdesk experience, leaning heavily on scripts to automate workflow</li>
+                                <li>Free Code Camp Front End, Data Visualisation and Back End Completed</li>
+                                <li>Self-motivated and passionate about learning new solutions and technologies.</li>
+                            </ul>
+                        </div>
+                        <br />
+                        <span className="bio-tags-icons-heading">Technologies</span>
+                        <div  className="bio-tags-icons">
+
+                            <span className="dev-icon devicon-html5-plain"></span>
+                            <span className="dev-icon devicon-jquery-plain-wordmark"></span>
+                            <span className="dev-icon devicon-css3-plain"></span>
+                            <span className="dev-icon devicon-javascript-plain"></span>
+                            <span className="dev-icon devicon-mongodb-plain-wordmark"></span>
+                            <span className="dev-icon devicon-express-original"></span>
+                            <span className="dev-icon devicon-react-original-wordmark"></span>                    
+                            <span className="dev-icon devicon-nodejs-plain"></span>
+                            <span className="dev-icon devicon-d3js-plain"></span>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        )
+    }
+}
+
+class PortfolioContainer extends React.Component{
+    constructor(){
+        super();
+        this.state = ({
+            projects:[
+                {
+                    name: "Pinterest Clone",
+                    description: "A pintrest clone allowing for users to log in, add images, like other users images and manage their own collections",
+                    link: "http://culling-fcc-pintrest.herokuapp.com/",
+                    screenshotUrl: "https://github.com/culling/fcc-pintrest/raw/master/docs/screenshot-01.png",
+                    github: "https://github.com/culling/fcc-pintrest"
+                },
+                {
+                    name: "Open Library",
+                    description: "A Book Trading club, able to add your books, request books from others and have requests made from you",
+                    link: "https://culling-fcc-bookswap2.herokuapp.com/",
+                    screenshotUrl: "https://github.com/culling/fcc-bookswap-v2/raw/master/docs/screenshot-01.png",
+                    github: "https://github.com/culling/fcc-bookswap-v2"
+                },
+                {
+                    name: "Chart the Stock Market - NYSE",
+                    description: "Charting the stock market using Socket.IO to allow multiple users to update the stocks listed for all users in real time",
+                    link: "https://culling-fcc-stocks-v2.herokuapp.com/",
+                    screenshotUrl: "https://github.com/culling/fcc-chart-stocks-v2/raw/master/docs/screenshot-01.png",
+                    github: "https://github.com/culling/fcc-chart-stocks-v2"
+                },
+                {
+                    name: "Nightlife Coordination",
+                    description: "A nightlife coordination application, allowing users to indicate which bars they plan to go to",
+                    link: "https://culling-fcc-tonight-v2.herokuapp.com/",
+                    screenshotUrl: "https://github.com/culling/fcc-tonight-v2/raw/master/docs/screenshot-01.png",
+                    github: "https://github.com/culling/fcc-tonight-v2"
+                },
+                {
+                    name: "Voting Application",
+                    description: "Build a voting application",
+                    link: "https://fcc-votes-v2.herokuapp.com/#",
+                    screenshotUrl: "https://github.com/culling/fcc-votes-v2/raw/master/docs/screenshot-01.png",
+                    github: "https://github.com/culling/fcc-votes-v2"
+                }
+            ]
+        })
+    };
+
+    render(){
+        return(
+            <div className="portfolio-container container">
+                <div id="projects-container" className="projects-container row">
+                    {this.state.projects &&
+                        this.state.projects.map((project, i )=>{
+                            return(
+                            <ProjectCard key={i} project={project} />
+                            )
+                        }) 
+                    }
+                    
+                </div>
+            </div>
+        )
+    }
+}
+
+class ProjectCard extends React.Component{
+    constructor(props){
+        super();
+    };
+
+    render(){
+        return(
+            <div className="col s12 m6">
+                <div className="card small horizontal">
+                    <div className="card-image" >
+                        <a href={this.props.project.link}>
+                            <img style={{"objectFit": "contain"}} src={this.props.project.screenshotUrl} alt={"screenshot of " + this.props.project.name } />
+                        </a>
+                    </div>
+                    <div className="card-stacked">
+                        <div className="card-content">
+                            <div className="card-title"> 
+                                {this.props.project.name}
+                            </div>
+                            {this.props.project.description}
+                            <div className="card-action">
+                                <a href={this.props.project.link}>
+                                    Live Page
+                                </a>
+                                <a href={this.props.project.github}>
+                                    <span style={{"fontSize": "2em" }} className="fa fa-github-square"></span>
+                                </a>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        )
+    };
+
 
 }
+
+ReactDOM.render(
+    <Navbar />, document.getElementById("navbar")
+)
+
+ReactDOM.render(
+    <MyInfoContainer />, document.getElementById("info-container")
+)
+
+ReactDOM.render (
+    <PortfolioContainer />, document.getElementById('mount-point')
+);

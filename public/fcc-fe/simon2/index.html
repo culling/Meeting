@@ -1,0 +1,222 @@
+    <head>
+        <link rel="stylesheet" 
+            href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" 
+            integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" 
+            crossorigin="anonymous">
+        <link rel="stylesheet" 
+            href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" 
+            crossorigin="anonymous">
+
+
+
+        <script src="https://code.jquery.com/jquery-3.1.1.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" 
+            integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" 
+            crossorigin="anonymous">
+        </script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.js"
+            crossorigin="anonymous">
+        </script>
+        <script src="./javascript.js"></script>
+
+        <style>
+
+            .inner-circle{
+                
+                background-color:grey;
+                border: 5px solid black;
+
+                width: 20vw;
+                height: 20vw;
+                position: absolute;
+                top: 10vw;
+                left: 40%;
+                z-index: 2;  
+                border-radius: 50%;
+                
+            }
+
+            .outer-circle{
+                
+                background-color:hsl(0, 0%, 20% );
+                border: 5px solid black;
+
+                width: 43vw;
+                height: 42vw;
+                position: absolute;
+                top: -1vh;
+                left: 28%;
+                z-index: -1;  
+                border-radius: 50%;
+                
+            }
+
+
+            .green{
+
+                background-color:darkgreen;
+                border-top-left-radius: 100%;
+                width: 20vw;
+                height: 20vw;
+                position: relative;
+                z-index: 1;
+                top: 0vh;
+                /*left: 40vw;*/
+
+            }
+            .red{
+                background-color: darkred;
+                border-top-right-radius: 100%;
+                width: 20vw;
+                height: 20vw;
+                position: relative;  
+                z-index: 1;                
+                top: 0vh;
+                /*left: 60vw;*/
+            }
+            .blue{
+                background-color: darkblue;
+                border-bottom-left-radius: 100%;
+                width: 20vw;
+                height: 20vw;
+                position: relative;
+                z-index: 1; 
+                top: 0vh;               
+                /*top: 40vh;
+                left: 40vw;*/
+            }
+            .yellow{
+                background-color: darkgoldenrod;
+                border-bottom-right-radius: 100%;
+                width: 20vw;
+                height: 20vw;
+                position: relative;                 
+                z-index: 1;                
+                top: 0vh;
+                /*top: 40vh;
+                left: 60vw;*/
+            }
+
+
+            .red-light{
+                background-color: red;
+                border-top-right-radius: 100%;
+            }
+            .green-light{
+                background-color: lime;
+                border-top-left-radius: 100%;
+            }
+
+            .blue-light{
+                background-color: blue;
+                border-bottom-left-radius: 100%;
+            }
+            .yellow-light{
+                background-color: yellow;
+                border-bottom-right-radius: 100%;
+            }
+
+
+            .colorButton{
+                
+                border: 1px solid black;
+                -webkit-transition: all 0.5s ease;
+                -moz-transition: all 0.5s ease;
+                -o-transition: all 0.5s ease;
+                transition: all 0.5s ease;
+            }
+
+            .inline{
+                display: inline;
+            }
+
+            .gameContainer{
+                position: relative;
+                text-align: center;
+
+            }
+
+            .stepCounter{
+                width:2em;
+            }
+
+            .strictEnabled{
+                background-color: orange;
+            }
+
+
+
+        </style>
+    </head>
+    <body>
+
+    <br>
+    <h2>Simon </h2>
+    <div class="container">
+        <div class="controlPanel">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="input-group input-group-lg">
+                        <div class="input-group-addon btn-block" style="color: red; background-color: darkred">
+                            <span >Counter</span>
+                            <label id="stepCounter" disabled="true" >--</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <button id="start" class="btn btn-primary btn-block" value="start">Start</button>
+                </div>
+                <div class="col-md-3">
+                    <button id="strict" class="btn btn-warning btn-block" value="strict">Strict</button>
+                </div>
+                <div class="col-md-3">
+                    <button id="reset" class="btn btn-danger btn-block"  value="reset">Reset</button>
+                </div>
+                </div>
+            </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="gameContainer" class="gameContainer">
+            
+        <div class="inner-circle">
+        </div>
+                
+                
+            
+        <div class="outer-circle"></div>
+        <div>   
+            <div>
+                <button class="colorButton green"    value="green"></button>
+                <button class="colorButton red"      value="red"></button>
+            </div>
+            <div>
+                <button class="colorButton blue"     value="blue"></button>        
+                <button class="colorButton yellow"   value="yellow"></button>
+            </div>
+            
+        </div>
+    </div>
+<audio src="https://s3.amazonaws.com/freecodecamp/simonSound1.mp3" id="green-audio"></audio>
+<audio src="https://s3.amazonaws.com/freecodecamp/simonSound2.mp3" id="red-audio"></audio>
+<audio src="https://s3.amazonaws.com/freecodecamp/simonSound3.mp3" id="yellow-audio"></audio>
+<audio src="https://s3.amazonaws.com/freecodecamp/simonSound4.mp3" id="blue-audio"></audio>
+
+
+<ol>    
+<li>User Story: I am presented with a random series of button presses.</li>
+<li>User Story: Each time I input a series of button presses correctly, I see the same series of button presses but with an additional step.</li>
+<li>User Story: I hear a sound that corresponds to each button both when the series of button presses plays, and when I personally press a button.</li>
+<li>User Story: If I press the wrong button, I am notified that I have done so, and that series of button presses starts again to remind me of the pattern so I can try again.</li>
+<li>User Story: I can see how many steps are in the current series of button presses.</li>
+<li>User Story: If I want to restart, I can hit a button to do so, and the game will return to a single step.</li>
+<li>User Story: I can play in strict mode where if I get a button press wrong, it notifies me that I have done so, and the game restarts at a new random series of button presses.</li>
+<li>User Story: I can win the game by getting a series of 20 steps correct. I am notified of my victory, then the game starts over.</li>
+</ol>
+<b>
+Hint: Here are mp3s you can use for each button: https://s3.amazonaws.com/freecodecamp/simonSound1.mp3, https://s3.amazonaws.com/freecodecamp/simonSound2.mp3, https://s3.amazonaws.com/freecodecamp/simonSound3.mp3, https://s3.amazonaws.com/freecodecamp/simonSound4.mp3.
+</b>
+
+    </body>

@@ -19,6 +19,7 @@
     "react": "^15.4.2",
     "d3": "^3.0.0",
     "topojson": "^2.0.0",
-    "d3-geo-projection": "^0.2.16"
+    "d3-geo-projection": "^0.2.16",
+    "materialize": "^0.99.0"
   }
 }
